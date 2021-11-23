@@ -1,6 +1,6 @@
 from ECE16Lib.Communication import Communication
 from ECE16Lib.CircularList import CircularList
-from ECE16Lib.Pedometer import Pedometer
+#from ECE16Lib.Pedometer import Pedometer
 from matplotlib import pyplot as plt
 from time import time
 from time import sleep
@@ -11,42 +11,52 @@ if __name__ == "__main__":
   num_samples = 250               # 5 seconds of data @ 50Hz
   process_time = 1                # compute the step count every second
 
-  ped = Pedometer(num_samples, fs, [])
+  # create circular list for timees and ppg
+  timeStamp = CircularList([], num_samples)
+  ax = CircularList([], num_samples)
+  ay = CircularList([], num_samples)
+  az = CircularList([], num_samples)
+
+  #ped = Pedometer(num_samples, fs, [])
 
   comms = Communication("/dev/ttyUSB0", 115200)
   comms.clear()                   # just in case any junk is in the pipes
   comms.send_message("wearable")  # begin sending data
 
-  ped.threshSetter(75, 1500) # to set the threshold
+  #ped.threshSetter(75, 1500) # to set the threshold
 
   try:
     previous_time = time()
-    sleep(2) # so i can skip first peak due to picking up the watch
-    theSteps = 0
     while(True):
       message = comms.receive_message()
-      anotherMsg = comms.rec_msg()
       if(message != None):
         try:
           (m1, m2, m3, m4) = message.split(',')
         except ValueError:        # if corrupted data, skip the sample
           continue
 
-        ped.add(int(m2),int(m3),int(m4))
+        #ped.add(int(m2),int(m3),int(m4))
+        timeStamp.add(int(m1))
+        ax.add(int(m2))
+        ay.add(int(m3))
+        az.add(int(m4))
 
         # if enough time has elapsed, process the data and plot it
         current_time = time()
         if (current_time - previous_time > process_time):
           previous_time = current_time
 
-          steps, peaks, filtered = ped.process()
-          theSteps = steps
+          #steps, peaks, filtered = ped.process()
+          #theSteps = steps
 
-          plt.cla()
-          plt.plot(filtered)
-          plt.title("Step Count: %d" % steps)
-          plt.show(block=False)
-          plt.pause(0.001)
+          output = str(ax[-1]) + " " + str(ay[-1]) + " " + str(az[-1])
+          print(output)
+
+          #plt.cla()
+          #plt.plot(filtered)
+          #plt.title("Step Count: %d" % steps)
+          #plt.show(block=False)
+          #plt.pause(0.001)
 
 
   except(Exception, KeyboardInterrupt) as e:

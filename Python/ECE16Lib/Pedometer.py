@@ -33,7 +33,7 @@ class Pedometer:
 
 
   """
-  A setter to set thresholds, for convenience. So no 
+  A setter to set thresholds, for convenience. So no
   need to reinstall library everytime
   """
   def threshSetter(self, t_low, t_high):

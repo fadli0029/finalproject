@@ -4,6 +4,7 @@ unsigned long timeStart = 0;					// Start time timing variable
 unsigned long timeEnd = 0;						// End time timing variables
 
 bool sampleSensors() {
+
 	timeEnd = micros();
 	if (timeEnd - timeStart >= sampleDelay) {
 		displaySampleRate(timeEnd);
@@ -14,7 +15,9 @@ bool sampleSensors() {
 		readAccelSensor();  // values stored in "ax", "ay", and "az"
 		return true;
 	}
+
 	return false;
+
 }
 
 void displaySampleRate(unsigned long currentTime) {
@@ -33,6 +36,7 @@ void displaySampleRate(unsigned long currentTime) {
 		count = 0;
 		lastTime = currentTime;
 	}
+
 }
 
 

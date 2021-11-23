@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
   ped = Pedometer(num_samples, fs, [])
 
-  comms = Communication([YOUR_BLUETOOTH_PORT], 115200)
+  comms = Communication("/dev/ttyUSB0", 115200)
   comms.clear()                   # just in case any junk is in the pipes
   comms.send_message("wearable")  # begin sending data
 
