@@ -65,6 +65,7 @@ if __name__ == "__main__":
           ax_process = process(ax, 20)
           ax_f.add(ax_process.tolist())
           plt.plot(times, np.array(ax_f), color='r')
+          print(ax_f[-1])
           #plt.plot(times, ax, color='b')
 
           ay_process = process(ay, 20)

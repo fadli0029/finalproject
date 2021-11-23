@@ -1,3 +1,4 @@
+from ECE16Lib.Communication import Communication
 from ECE16Lib.CircularList import CircularList
 import ECE16Lib.DSP as filt
 import numpy as np

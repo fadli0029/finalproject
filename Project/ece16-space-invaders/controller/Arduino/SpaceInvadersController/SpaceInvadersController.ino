@@ -59,18 +59,34 @@ void loop() {
     sending = true;
     writeDisplay("Controller: On", 0, true);
   }
-
   if(sending && sampleSensors()) {
+    String response = String(sampleTime) + ",";
+    response += String(ax) + "," + String(ay) + "," + String(az);
+
     if (isShoot) {
-      sendMessage(String(2) + String(getOrientation()));
+      sendMessage(String(2) + response);
       // sending two numbers here, 23, 24, or 20
       // i.e: firing and moving, or just firing
     }
     else {
-      sendMessage(String(7) + String(getOrientation()));
+      sendMessage(String(7) + response);
       // sending one number here, 73 or 74
       // i.e: moving but not firing
     }
   }
   oldStatus = isShoot;
+
+  //if(sending && sampleSensors()) {
+  //  if (isShoot) {
+  //    sendMessage(String(2) + String(getOrientation()));
+  //    // sending two numbers here, 23, 24, or 20
+  //    // i.e: firing and moving, or just firing
+  //  }
+  //  else {
+  //    sendMessage(String(7) + String(getOrientation()));
+  //    // sending one number here, 73 or 74
+  //    // i.e: moving but not firing
+  //  }
+  //}
+  //oldStatus = isShoot;
 }
