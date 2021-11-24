@@ -1,6 +1,16 @@
 import random
 import pygame
 pygame.init()
+import socket
+
+
+host = "127.0.0.1"
+port = 65432
+mySocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+mySocket.bind((host, port))
+mySocket.setblocking(False)
+print("UDP server listening on port {0}.\n".format(port))
+
 
 RED = (255,0,0)
 ORANGE = (255,127,0)
@@ -23,6 +33,11 @@ font = pygame.font.Font("HighlandGothicFLF.ttf",20)
 mouse_state = 0
 mouse_x = 0
 mouse_y = 0
+key_state = 0
+key_x = 0
+key_y = 0
+reset = -1
+mode = -1
 
 cColumns = 0
 cRows = 0
@@ -173,6 +188,12 @@ class Tile():
     def update(self):
         global gameState
         if gameState == 0:
+
+            if key_state == 1 and self.x == (key_x * (size[0] / self.columns)) and self.y == ((key_y * ((size[1] - 100) / self.rows)) + 100):
+                self.visible = True
+                self.flag = False
+                #key_state = 0
+
             if mouse_state == 1 and mouse_x >= self.x and mouse_x <= (self.x + (size[0] / self.columns)) and mouse_y >= self.y and mouse_y <= (self.y + ((size[1] - 100) / self.rows)):
                 self.visible = True
                 self.flag = False
@@ -361,8 +382,25 @@ class Game():
                 self.board[y][x].neighbors = self.neighbnum
 
 game = Game(5,5,5)
-
 while not done:
+    try:
+        data, addr = mySocket.recvfrom(1024)  # receive 1024 bytes
+        data = data.decode("utf-8")
+        (x_col, y_col, reset , mode) = data.split(',')
+        key_y = int(y_col)
+        key_x = int(x_col)
+        
+        key_state = 1
+
+        reset = int(reset)
+        mode = int(mode)
+        if reset == 1:
+            gameState = -1
+
+    except BlockingIOError:
+        key_state = 0
+        pass  # do nothing if there's no data
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
@@ -379,16 +417,28 @@ while not done:
     
     if gameState == -1:
         menu()
+        if mode == 0:  #easy
+            game.reset(5, 5, 5)
+            gameState = 0
+        if mode == 1:  #Medium
+            game.reset(10, 10, 15)
+            gameState = 0
+        if mode == 2:  #Hard
+            game.reset(15, 15, 30)
+            gameState = 0
+        if mode == 3:  #Custom
+            gameState = -2
+
+
     
     elif gameState == -2:
         custom()
-    
+
     elif gameState >= 0 and gameState <= 2:
         infoBar()
-        
         game.update()
         game.render()
-    
+
     pygame.display.flip()
     
     clock.tick(60)
