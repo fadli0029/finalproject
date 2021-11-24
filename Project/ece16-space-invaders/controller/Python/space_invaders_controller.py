@@ -159,13 +159,22 @@ class PygameController:
           if f_command is not None:
             mySocket.send(f_command.encode("UTF-8"))
 
+        try:
+            data = mySocket.recv(1024)
+            data = data.decode("utf-8")
+            controller.comms.send_message(data)
+            #print("Response: " + data)
+        except BlockingIOError:
+            pass  # do nothing if there's no data
+
+
 if __name__== "__main__":
 
   the_num_samples = 100               # 2 seconds of data @ 50Hz
   the_refresh_time = 0.01             # update the processing every 0.01s 
   sensitivity = 2
 
-  serial_name = "/dev/ttyUSB0"
+  serial_name = "/dev/cu.esp32Spark-ESP32SPP"
   baud_rate = 115200
   controller = PygameController(serial_name, baud_rate, the_num_samples, the_refresh_time, sensitivity)
 

@@ -2,13 +2,14 @@
 int ax = 0; int ay = 0; int az = 0;
 int ppg = 0;        // PPG from readPhotoSensor() (in Photodetector tab)
 int sampleTime = 0; // Time of last sample (in Sampling tab)
-const int buttonPin = 12;
+const int buttonPin = 0;
 
 bool sending, oldStatus, isShoot;
 
 int currentState = 0;
 int lastButtonState;
-
+bool vibrate = false;
+unsigned long timer1 = millis();
 /*
  * Initialize the various components of the wearable
  */
@@ -17,6 +18,7 @@ void setup() {
   setupCommunication();
   setupDisplay();
   setupPhotoSensor();
+  setupMotor();
   sending = false;
   oldStatus = false;  // for button/buzzer
   isShoot = false;
@@ -55,6 +57,22 @@ void loop() {
     sending = true;
     writeDisplay("Controller: On", 0, true);
   }
+  else if(command == "Dead"){
+    sending = false;
+    writeDisplay("You Died!!!", 0, true);
+    vibrate = true;
+    timer1 = currentMillis;
+    activateMotor(255);
+  }
+  else if(command == "Hit"){
+    writeDisplay("You've been Hit!", 0, true);
+    vibrate = true;
+    timer1 = currentMillis;
+    activateMotor(255);
+  }
+  else{
+    writeDisplayCSV(command,1);
+  }
   if(sending && sampleSensors()) {
     String response = String(sampleTime) + ",";
     response += String(ax) + "," + String(ay) + "," + String(az);
@@ -65,6 +83,10 @@ void loop() {
     else {
       sendMessage(String(7) + "," + response);
     }
+  }
+  if(vibrate && (currentMillis - timer1 >500)){
+    vibrate = false;
+    deactivateMotor();
   }
   oldStatus = isShoot;
 }

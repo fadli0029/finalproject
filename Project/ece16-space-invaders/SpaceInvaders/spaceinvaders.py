@@ -478,12 +478,13 @@ class SpaceInvaders(object):
     ''' ============================================================ '''
     def check_input_udp_socket(self):
         #mark
+        global address
         try:
             msg, addr = mySocket.recvfrom(1024) # receive 1024 bytes
             msg = msg.decode('utf-8')
             print("Command: " + msg)
-            #print("addr: " + str(addr))
-
+            print("addr: " + str(addr))
+            address = addr
             if msg == "QUIT":
                 sys.exit()
             if msg == "FIRE":
@@ -586,6 +587,7 @@ class SpaceInvaders(object):
         self.screen.blit(self.enemy4, (299, 420))
 
     def check_collisions(self):
+        mySocket.sendto((",Score: "+ str(self.score)+ "   ").encode("utf-8"), address)  # sends Score notification to socket
 
         sprite.groupcollide(self.bullets, self.enemyBullets, True, True)
 
@@ -606,13 +608,11 @@ class SpaceInvaders(object):
             self.allSprites.add(newShip)
             self.mysteryGroup.add(newShip)
 
+
         for player in sprite.groupcollide(self.playerGroup, self.enemyBullets,
                                           True, True).keys():
             #mark
             if self.life3.alive():
-                # added - Fade
-                #mySocket.sendto("HIT".encode("UTF-8"), ('127.0.0.1', 36791))
-                # ...
                 self.life3.kill()
             elif self.life2.alive():
                 self.life2.kill()
@@ -621,6 +621,11 @@ class SpaceInvaders(object):
             else:
                 self.gameOver = True
                 self.startGame = False
+                mySocket.sendto("Dead".encode("utf-8"), address)  # sends Game over notification to socket
+
+            if not self.gameOver:
+                mySocket.sendto("Hit".encode("utf-8"), address)   # sends hit notification to socket
+
             self.sounds['shipexplosion'].play()
             ShipExplosion(player, self.explosionsGroup)
             self.makeNewShip = True
