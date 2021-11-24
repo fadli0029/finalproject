@@ -1,7 +1,3 @@
-"""
-@author: Ramsin Khoshabeh
-"""
-
 from ECE16Lib.Communication import Communication
 from ECE16Lib.CircularList import CircularList
 from time import sleep
@@ -10,8 +6,10 @@ import socket, pygame
 import numpy as np
 
 # Setup the Socket connection to the Space Invaders game
+# CLIENT
 host = "127.0.0.1"
 port = 65432
+tester = ("127.0.0.1", 65432)
 mySocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 mySocket.connect((host, port))
 mySocket.setblocking(False)
@@ -64,7 +62,7 @@ class PygameController:
   def is_between(self, target, x, y):
     return (target >= x and target <= y)
 
-  def generatingCommand(self, xf_input, yf_input, zf_input):
+  def generatingCommand(self, xf_input, yf_input, zf_input, is_fire):
     adj_xLeft = 0
     adj_xRight = 0
     adj_z = 0
@@ -78,26 +76,34 @@ class PygameController:
     adjusted_thresZ = 2200-adj_z
 
     command = None
-    # this functiong takes in self.ax_f, etc
+
     x_cmd = np.array(xf_input)
     y_cmd = np.array(yf_input)
     z_cmd = np.array(zf_input)
 
-    #print(2300+adj_x)
+    if (is_fire == 2):
+      # shooting but not moving
+      command = "FIRE"
 
     # previous upper bound: 1956
     if (self.is_between(x_cmd[-1], 1950, 1970) == False):
-        # tilting
-        # az can drop to lowest to 2.2k, regardless tilted
-        # left or right
-        # ax can go up to 2300 when tilt left
-        # and as low as 1655 when tilt right
+      # tilting
+      # az can drop to lowest to 2.2k, regardless tilted
+      # left or right
+      # ax can go up to 2300 when tilt left
+      # and as low as 1655 when tilt right
       if (x_cmd[-1] <= adjusted_thresLeft and x_cmd[-1] > 1956 and z_cmd[-1] > adjusted_thresZ):
         # tilt left
-        command = "LEFT"
+        if (is_fire == 2):
+          command = "LFIRE"
+        else:
+          command = "LEFT"
       if (x_cmd[-1] >= adjusted_thresRight and x_cmd[-1] < 1950 and z_cmd[-1] > adjusted_thresZ):
         # tilt right
-        command = "RIGHT"
+        if (is_fire == 2):
+          command = "RFIRE"
+        else:
+          command = "RIGHT"
 
     return command, x_cmd[-1], z_cmd[-1]
 
@@ -122,9 +128,10 @@ class PygameController:
       message = self.comms.receive_message()
 
       if(message != None):
+        #print(message)
         f_command = None
         try:
-          (m1, m2, m3, m4) = message.split(',')
+          (m0, m1, m2, m3, m4) = message.split(',')
         except ValueError:        # if corrupted data, skip the sample
           continue
 
@@ -138,61 +145,24 @@ class PygameController:
         current_time = time()
         if (current_time - previous_time > self.refresh_time):
           previous_time = current_time
-          #plt.cla()
 
           az_process = self.process(self.az, 20)
           self.az_f.add(az_process.tolist())
-          #plt.plot(times, np.array(az_f), color='tab:gray')
-          #plt.plot(times, az, color='tab:orange')
 
           ax_process = self.process(self.ax, 20)
           self.ax_f.add(ax_process.tolist())
-          #plt.plot(times, np.array(ax_f), color='r')
-          #plt.plot(times, ax, color='b')
 
           ay_process = self.process(self.ay, 20)
           self.ay_f.add(ay_process.tolist())
-          #plt.plot(times, np.array(ay_f), color='c')
-          #plt.plot(times, ay, color='k')
 
-          f_command, valx, valz = self.generatingCommand(self.ax_f, self.ay_f, self.az_f)
-
-          #plt.show(block=False)
-          #plt.pause(0.001)
+          f_command, valx, valz = self.generatingCommand(self.ax_f, self.ay_f, self.az_f, int(m0))
           if f_command is not None:
-            #print(f_command + '[' + str(valx) + ']' + '[' + str(valz) + ']')
             mySocket.send(f_command.encode("UTF-8"))
-          #if f_command is None:
-          #  print("None" + '[' + str(valx) + ']' + '[' + str(valz) + ']')
-
-
-      # if the last message is similar to current message,
-      # don't send any message to avoid lagging due
-      # to continuously sending messages 
-      #if ((message != lastMessage) and (message != None)):
-      #  command = None
-      #  message = int(message)
-
-      #  if message == 23:
-      #    command = "RFIRE"
-      #  elif message == 24:
-      #    command = "LFIRE"
-      #  elif message == 20:
-      #    command = "FIRE"
-      #  elif message == 74:
-      #    command = "LEFT"
-      #  elif message == 73:
-      #    command = "RIGHT"
-
-      #  if command is not None:
-      #    mySocket.send(command.encode("UTF-8"))
-
-      #lastMessage = message
 
 if __name__== "__main__":
-  #serial_name = "/dev/cu.BTDemo-ESP32SPP"
+
   the_num_samples = 100               # 2 seconds of data @ 50Hz
-  the_refresh_time = 0.01              # update the plot every 0.1s (10 FPS)
+  the_refresh_time = 0.01             # update the processing every 0.01s 
   sensitivity = 2
 
   serial_name = "/dev/ttyUSB0"

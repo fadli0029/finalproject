@@ -1,6 +1,3 @@
-/*
- * Global variables
- */
 // Acceleration values recorded from the readAccelSensor() function
 int ax = 0; int ay = 0; int az = 0;
 int ppg = 0;        // PPG from readPhotoSensor() (in Photodetector tab)
@@ -49,7 +46,6 @@ void loop() {
   }
   lastButtonState = currentState;
 
-  // Parse command coming from Python (either "stop" or "start")
   String command = receiveMessage();
   if(command == "stop") {
     sending = false;
@@ -64,29 +60,11 @@ void loop() {
     response += String(ax) + "," + String(ay) + "," + String(az);
 
     if (isShoot) {
-      sendMessage(String(2) + response);
-      // sending two numbers here, 23, 24, or 20
-      // i.e: firing and moving, or just firing
+      sendMessage(String(2) + "," + response);
     }
     else {
-      sendMessage(String(7) + response);
-      // sending one number here, 73 or 74
-      // i.e: moving but not firing
+      sendMessage(String(7) + "," + response);
     }
   }
   oldStatus = isShoot;
-
-  //if(sending && sampleSensors()) {
-  //  if (isShoot) {
-  //    sendMessage(String(2) + String(getOrientation()));
-  //    // sending two numbers here, 23, 24, or 20
-  //    // i.e: firing and moving, or just firing
-  //  }
-  //  else {
-  //    sendMessage(String(7) + String(getOrientation()));
-  //    // sending one number here, 73 or 74
-  //    // i.e: moving but not firing
-  //  }
-  //}
-  //oldStatus = isShoot;
 }

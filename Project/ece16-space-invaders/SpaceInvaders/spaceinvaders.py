@@ -9,6 +9,7 @@ from os.path import abspath, dirname
 from random import choice
 
 ''' ============================================================ '''
+# SERVER
 import socket
 host = "127.0.0.1"
 port = 65432
@@ -75,6 +76,7 @@ class Ship(sprite.Sprite):
         if direction == "RFIRE" and self.rect.x < 740:
             self.rect.x += self.speed
         # end of additions ...
+
         game.screen.blit(self.image, self.rect)
 
 
@@ -475,10 +477,12 @@ class SpaceInvaders(object):
 
     ''' ============================================================ '''
     def check_input_udp_socket(self):
+        #mark
         try:
-            msg, _ = mySocket.recvfrom(1024) # receive 1024 bytes
+            msg, addr = mySocket.recvfrom(1024) # receive 1024 bytes
             msg = msg.decode('utf-8')
             print("Command: " + msg)
+            #print("addr: " + str(addr))
 
             if msg == "QUIT":
                 sys.exit()
@@ -582,6 +586,7 @@ class SpaceInvaders(object):
         self.screen.blit(self.enemy4, (299, 420))
 
     def check_collisions(self):
+
         sprite.groupcollide(self.bullets, self.enemyBullets, True, True)
 
         for enemy in sprite.groupcollide(self.enemies, self.bullets,
@@ -603,7 +608,11 @@ class SpaceInvaders(object):
 
         for player in sprite.groupcollide(self.playerGroup, self.enemyBullets,
                                           True, True).keys():
+            #mark
             if self.life3.alive():
+                # added - Fade
+                #mySocket.sendto("HIT".encode("UTF-8"), ('127.0.0.1', 36791))
+                # ...
                 self.life3.kill()
             elif self.life2.alive():
                 self.life2.kill()
