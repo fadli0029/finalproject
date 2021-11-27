@@ -2,7 +2,7 @@
 int ax = 0; int ay = 0; int az = 0;
 int ppg = 0;        // PPG from readPhotoSensor() (in Photodetector tab)
 int sampleTime = 0; // Time of last sample (in Sampling tab)
-const int buttonPin = 12; /*0;*/
+const int buttonPin = 0; /*12;*/
 
 bool sending, oldStatus, isShoot;
 
@@ -70,8 +70,8 @@ void loop() {
     timer1 = currentMillis;
     activateMotor(255);
   }
-  else{
-    writeDisplayCSV(command,1);
+  else if (command != ""){
+    //writeDisplayCSV(command,1);
   }
   if(sending && sampleSensors()) {
     String response = String(sampleTime) + ",";
