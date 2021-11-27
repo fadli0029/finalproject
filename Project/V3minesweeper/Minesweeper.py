@@ -214,16 +214,24 @@ def gameLoop():
                         # [commented: Fade]
 
         ''' ============================================================ '''
-        # added here [Fade]
+        # added here [Fade][justin]
         msg, addr = check_input_udp_socket()
-        if msg is not None:
+        if not msg == None:
+            try:
+                (msg, x, y) = msg.split(',')
+
+                x_shifted = int(x) * 31 + 34  # conversion equations
+                y_shifted = int(y) * 33 + 116
+            except ValueError:      # if corrupted data, skip the sample
+                continue
             print("Command: " + str(msg))
+
         if msg == "click":
             for i in grid:
                 for j in i:
                     coord = pygame.mouse.get_pos()
-                    if j.rect.collidepoint(coord):
-                        print("coordinate: " + str(coord))
+                    if j.rect.collidepoint(x_shifted,y_shifted):
+                        #print("coordinate: " + str(coord))
                         j.revealGrid()
                         # Toggle flag off
                         if j.flag:

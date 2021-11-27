@@ -47,6 +47,9 @@ class PygameController:
         except ValueError:        # if corrupted data, skip the sample
           continue
 
+        x = 0   #values for test get these values from esp32 later
+        y = 0
+
         isclicked = int(m0)
 
         # if enough time has elapsed, clear the axis, and plot az
@@ -55,7 +58,7 @@ class PygameController:
         #  previous_time = current_time
 
         if isclicked == 2:
-          f_command = "click"
+          f_command = "click,"+str(x)+","+str(y)
         #elif isclicked == 7:
         #  f_command = "noclick"
 
@@ -78,8 +81,8 @@ if __name__== "__main__":
   #the_refresh_time = 0.01             # update the processing every 0.01s 
   #sensitivity = 2
 
-  #serial_name = "/dev/cu.esp32Spark-ESP32SPP"
-  serial_name = "/dev/ttyUSB0"
+  serial_name = "/dev/cu.esp32Spark-ESP32SPP"
+  #serial_name = "/dev/ttyUSB0"
   baud_rate = 115200
   #controller = PygameController(serial_name, baud_rate, the_num_samples, the_refresh_time, sensitivity)
   controller = PygameController(serial_name, baud_rate)
