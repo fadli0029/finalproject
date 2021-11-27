@@ -16,8 +16,10 @@ print("UDP server listening on port {0}.\n".format(port))
 bg_color = (192, 192, 192)
 grid_color = (128, 128, 128)
 
-game_width = 10  # Change this to increase size
-game_height = 10  # Change this to increase size
+#game_width = 10   # Change this to increase size
+#game_height = 10  # Change this to increase size
+game_width = 7   # Change this to increase size
+game_height = 7  # Change this to increase size
 numMine = 9  # Number of mines
 grid_size = 32  # Size of grid (WARNING: macke sure to change the images dimension as well)
 border = 16  # Top border
@@ -214,11 +216,14 @@ def gameLoop():
         ''' ============================================================ '''
         # added here [Fade]
         msg, addr = check_input_udp_socket()
-        print("Command: " + str(msg))
+        if msg is not None:
+            print("Command: " + str(msg))
         if msg == "click":
             for i in grid:
                 for j in i:
-                    if j.rect.collidepoint(pygame.mouse.get_pos()):
+                    coord = pygame.mouse.get_pos()
+                    if j.rect.collidepoint(coord):
+                        print("coordinate: " + str(coord))
                         j.revealGrid()
                         # Toggle flag off
                         if j.flag:
