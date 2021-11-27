@@ -19,8 +19,12 @@ WHITE = (255,255,255)
 GREY = (127,127,127)
 BLACK = (0,0,0)
 
-size = (500,600)
+size = (500,600) # creates a 500x600 pixels window [commented: Fade]
 screen = pygame.display.set_mode(size)
+# create a screen of size, "size", ie: 500x600,
+# NOT the number of tiles/board! 
+# See: https://www.pygame.org/docs/ref/display.html#pygame.display.set_mode
+# [commented: Fade]
 
 pygame.display.set_caption("Minesweeper")
 
@@ -33,10 +37,13 @@ font = pygame.font.Font("HighlandGothicFLF.ttf",20)
 mouse_state = 0
 mouse_x = 0
 mouse_y = 0
+
+# justin adds from here [commented: Fade]
 key_state = 0
 key_x = 0
 key_y = 0
-reset = -1
+is_reset = -1
+# changed reset->is_reset coz too many methods/variables with name "reset" [commented: Fade]
 mode = -1
 
 cColumns = 0
@@ -48,7 +55,7 @@ gameState = -1
 class Button():
     def __init__(self):
         self.textBoxes = {}
-    
+
     #----Clicked In----
     def clickedIn(self,x,y,width,height):
         global mouse_state, mouse_x, mouse_y
@@ -66,7 +73,7 @@ class Button():
         global mouse_state, mouse_x, mouse_y
         if mouse_state == 0 and mouse_x >= x and mouse_x <= (x + width) and mouse_y >= y and mouse_y <= (y + height):
             return True
-    
+
     #----Click Button----
     def clickButton(self,x,y,width,height,normalColor,hoverColor,textFont,text,textColor,stateHolding = False,stateVariable = 0,state = 1):
         if not self.clickedIn(x,y,width,height) and not self.hovering(x,y,width,height):
@@ -88,7 +95,7 @@ def infoBar():
     global gameState
     pygame.draw.rect(screen,GREY,(0,0,500,100))
     pygame.draw.line(screen,BLACK,(0,100),(500,100),4)
-    
+
     if gameState == 0:
         text = font.render("MINES: " + str(game.nummines),True,BLACK)
         text_x = text.get_rect().width
@@ -108,7 +115,7 @@ def infoBar():
         text_x = text.get_rect().width
         text_y = text.get_rect().height
         screen.blit(text,((150 - (text_x / 2)),(50 - (text_y / 2))))
-        
+
     if gameState == 1 or gameState == 2:
         if button.clickButton(325,25,150,50,RED,ORANGE,font,"RESET",BLACK):
             gameState = -1
@@ -172,39 +179,51 @@ def custom():
     if button.clickButton(200,390,100,60,RED,ORANGE,font,"START",BLACK):
         game.reset(cColumns,cRows,cMines)
         gameState = 0
-    
 
+
+# mark [commented: Fade]
 class Tile():
     def __init__(self,x,y,columns,rows):
         self.columns = columns
         self.rows = rows
         self.x = (x * (size[0] / self.columns))
+        # each column takes the size of 500pixels/no.of columns.
+        # if there are 5 columns, then the size of of each column is
+        # 500/5, i.e: 100 pixels [commented: Fade]
         self.y = (y * ((size[1] - 100) / self.rows)) + 100
         self.mine = False
-        self.neighbors = 0
+        self.neighbors = 0 # what is neightbors for really? [commented: Fade]
         self.visible = False
         self.flag = False
-    
+
     def update(self):
         global gameState
         if gameState == 0:
 
+            # added here
             if key_state == 1 and self.x == (key_x * (size[0] / self.columns)) and self.y == ((key_y * ((size[1] - 100) / self.rows)) + 100):
                 self.visible = True
                 self.flag = False
                 #key_state = 0
 
+            # mouse_state = 1 -> left click [commented: Fade]
             if mouse_state == 1 and mouse_x >= self.x and mouse_x <= (self.x + (size[0] / self.columns)) and mouse_y >= self.y and mouse_y <= (self.y + ((size[1] - 100) / self.rows)):
                 self.visible = True
                 self.flag = False
+
+            # mouse_state = 3 -> right click [commented: Fade]
             if mouse_state == 3 and mouse_x >= self.x and mouse_x <= (self.x + (size[0] / self.columns)) and mouse_y >= self.y and mouse_y <= (self.y + ((size[1] - 100) / self.rows)):
                 if self.flag == False:
                     self.flag = True
                 elif self.flag == True:
                     self.flag = False
+
             if self.visible == True and self.mine == True:
+                # this if block is entered when the player clicked on a mine
+                # so gameState is 2, i.e: player lost
+                # [commented: Fade]
                 gameState = 2
-    
+
     def show(self):
         if self.flag == True:
             pygame.draw.rect(screen,YELLOW,(self.x,self.y,(size[0] / self.columns),((size[1] - 100) / self.rows)))
@@ -216,39 +235,43 @@ class Tile():
                     text_x = text.get_rect().width
                     text_y = text.get_rect().height
                     screen.blit(text,((self.x + ((size[0] / self.columns) / 2) - (text_x / 2)),(self.y + (((size[1] - 100) / self.rows) / 2) - (text_y / 2))))
-            
+
             elif self.mine == True:
                 pygame.draw.rect(screen,RED,(self.x,self.y,(size[0] / self.columns),((size[1] - 100) / self.rows)))
-        
+
         pygame.draw.rect(screen,BLACK,(self.x,self.y,(size[0] / self.columns),((size[1] - 100) / self.rows)),2)
 
 class Game():
     def __init__(self,columns,rows,mines):
-        self.columns = columns
-        self.rows = rows
-        self.nummines = mines
+        self.columns = columns # number of columns for the current game [commented: Fade]
+        self.rows = rows       # number of rows for the current game [commented: Fade]
+        self.nummines = mines  # number of mines to be found [commented: Fade]
         self.board = []
         self.mines = []
         self.minenum = len(self.mines)
-        self.neighbnum = 0
-        self.numflaged = 0
-        self.numvis = 0
-        self.foundmines = 0
-        
+        # like a temp holder to place mines, coz we 
+        # never know how many mines the player would ask for when initializing the game [commented: Fade]
+        self.neighbnum = 0   # ??? [commented: Fade]
+        self.numflaged = 0   # number of tiles flagged [commented: Fade]
+        self.numvis = 0      # ??? [commented: Fade]
+        self.foundmines = 0  # number of mines found [commented: Fade]
+
         #creating board
         for y in range(self.rows):
             self.board.append([])
             for x in range(self.columns):
                 self.board[y].append(Tile(x,y,self.columns,self.rows))
-        
-        #placing mines
+                # create tile row by row (i.e: create tile for row 1 in column 1, 2, 3,...) [commented: Fade]
+                # where x(col), and y(row), can be interpreted as the coordinate of a tile on the board
+
+        #placing mines at random positions
         while self.minenum < self.nummines:
             self.mineloc = [random.randrange(self.columns),random.randrange(self.rows)]
             if self.board[self.mineloc[1]][self.mineloc[0]].mine == False:
                 self.mines.append(self.mineloc)
                 self.board[self.mineloc[1]][self.mineloc[0]].mine = True
             self.minenum = len(self.mines)
-        
+
         #neighbors
         for y in range(self.rows):
             for x in range(self.columns):
@@ -278,7 +301,7 @@ class Game():
                     if self.board[y+1][x+1].mine == True:
                         self.neighbnum += 1
                 self.board[y][x].neighbors = self.neighbnum
-    
+
     def update(self):
         global gameState
         self.numflaged = 0
@@ -286,7 +309,7 @@ class Game():
         self.foundmines = 0
         for y in range(self.rows):
             for x in range(self.columns):
-                self.board[y][x].update()
+                self.board[y][x].update() # calling update() method in Tile class [commented: Fade]
                 if self.board[y][x].neighbors == 0 and self.board[y][x].visible == True:
                     if y > 0 and x > 0:
                         self.board[y-1][x-1].visible = True
@@ -317,13 +340,13 @@ class Game():
             for y in range(self.rows):
                 for x in range(self.columns):
                     self.board[y][x].visible = True
-        
-    
+
+
     def render(self):
         for y in range(self.rows):
             for x in range(self.columns):
                 self.board[y][x].show()
-    
+
     def reset(self,columns,rows,mines):
         if columns != 0 and rows != 0 and mines != 0:
             self.columns = columns
@@ -336,21 +359,21 @@ class Game():
         self.numflaged = 0
         self.numvis = 0
         self.foundmines = 0
-        
+
         #creating board
         for y in range(self.rows):
             self.board.append([])
             for x in range(self.columns):
                 self.board[y].append(Tile(x,y,self.columns,self.rows))
-        
-        #placing mines
+
+        #placing mines at random positions
         while self.minenum < self.nummines:
             self.mineloc = [random.randrange(self.columns),random.randrange(self.rows)]
             if self.board[self.mineloc[1]][self.mineloc[0]].mine == False:
                 self.mines.append(self.mineloc)
                 self.board[self.mineloc[1]][self.mineloc[0]].mine = True
             self.minenum = len(self.mines)
-        
+
         #neighbors
         for y in range(self.rows):
             for x in range(self.columns):
@@ -386,15 +409,15 @@ while not done:
     try:
         data, addr = mySocket.recvfrom(1024)  # receive 1024 bytes
         data = data.decode("utf-8")
-        (x_col, y_col, reset , mode) = data.split(',')
+        (x_col, y_col, is_reset , mode) = data.split(',')
         key_y = int(y_col)
         key_x = int(x_col)
-        
+
         key_state = 1
 
-        reset = int(reset)
+        is_reset = int(is_reset)
         mode = int(mode)
-        if reset == 1:
+        if is_reset == 1:
             gameState = -1
 
     except BlockingIOError:
@@ -406,15 +429,23 @@ while not done:
             done = True
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_state = event.button
+            # mouse_state can have any of these values:
+            # 1 - left click
+            # 2 - middle click
+            # 3 - right click
+            # 4 - scroll up
+            # 5 - scroll down
+            # source: https://stackoverflow.com/a/34302658/14892587
+            # [commented: Fade]
             pygame.mouse.set_pos(mouse_x,mouse_y + 1)
         else:
             mouse_state = 0
-    
+
     mouse_x = pygame.mouse.get_pos()[0]
     mouse_y = pygame.mouse.get_pos()[1]
-    
+
     screen.fill(WHITE)
-    
+
     if gameState == -1:
         menu()
         if mode == 0:  #easy
@@ -429,18 +460,16 @@ while not done:
         if mode == 3:  #Custom
             gameState = -2
 
-
-    
     elif gameState == -2:
         custom()
 
     elif gameState >= 0 and gameState <= 2:
         infoBar()
-        game.update()
+        game.update() # what does this do? [commented: Fade]
         game.render()
 
     pygame.display.flip()
-    
+
     clock.tick(60)
 
 pygame.quit()
