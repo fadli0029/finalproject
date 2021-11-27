@@ -2,6 +2,17 @@ import pygame
 import random
 pygame.init()
 
+''' ============================================================ '''
+# SERVER
+import socket
+host = "127.0.0.1"
+port = 65432
+mySocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+mySocket.bind((host, port))
+mySocket.setblocking(0)
+print("UDP server listening on port {0}.\n".format(port))
+''' ============================================================ '''
+
 bg_color = (192, 192, 192)
 grid_color = (128, 128, 128)
 
@@ -124,6 +135,19 @@ class Grid:
                             if grid[self.yGrid + y][self.xGrid + x].val == -1:
                                 self.val += 1
 
+''' ============================================================ '''
+# added here [Fade]
+def check_input_udp_socket():
+    msg = None
+    addr = 0
+    try:
+        msg, addr = mySocket.recvfrom(1024) # receive 1024 bytes
+        msg = msg.decode('utf-8')
+    except BlockingIOError:
+        pass # do nothing if there's no data
+    return msg, addr
+# additions ended here
+''' ============================================================ '''
 
 def gameLoop():
     gameState = "Playing"  # Game state
@@ -158,7 +182,7 @@ def gameLoop():
                 line.append(Grid(i, j, -1))
             else:
                 line.append(Grid(i, j, 0))
-        grid.append(line)
+        grid.append(line) # grid is a list of Grid objects [commented: Fade]
 
     # Update of the grid
     for i in grid:
@@ -175,37 +199,37 @@ def gameLoop():
             # Check if player close window
             if event.type == pygame.QUIT:
                 gameState = "Exit"
-            # Check if play restart
+            # Check if player restart the game
             if gameState == "Game Over" or gameState == "Win":
                 if event.type == pygame.KEYDOWN:
+                    # check if there's a key physically pressed down [commented: Fade]
                     if event.key == pygame.K_r:
+                        # check if that key is the key 'r' [commented: Fade]
                         gameState = "Exit"
                         gameLoop()
-            else:
-                if event.type == pygame.MOUSEBUTTONUP:
-                    for i in grid:
-                        for j in i:
-                            if j.rect.collidepoint(event.pos):
-                                if event.button == 1:
-                                    # If player left clicked of the grid
-                                    j.revealGrid()
-                                    # Toggle flag off
-                                    if j.flag:
-                                        mineLeft += 1
-                                        j.falg = False
-                                    # If it's a mine
-                                    if j.val == -1:
-                                        gameState = "Game Over"
-                                        j.mineClicked = True
-                                elif event.button == 3:
-                                    # If the player right clicked
-                                    if not j.clicked:
-                                        if j.flag:
-                                            j.flag = False
-                                            mineLeft += 1
-                                        else:
-                                            j.flag = True
-                                            mineLeft -= 1
+                        # if it is, exit this game by exiting this while loop
+                        # and make a recursion call by calling gameLoop()
+                        # [commented: Fade]
+
+        ''' ============================================================ '''
+        # added here [Fade]
+        msg, addr = check_input_udp_socket()
+        print("Command: " + str(msg))
+        if msg == "click":
+            for i in grid:
+                for j in i:
+                    if j.rect.collidepoint(pygame.mouse.get_pos()):
+                        j.revealGrid()
+                        # Toggle flag off
+                        if j.flag:
+                            mineLeft += 1
+                            j.flag = False
+                        # If it's a mine
+                        if j.val == -1:
+                            gameState = "Game Over"
+                            j.mineClicked = True
+        # additions ended here
+        ''' ============================================================ '''
 
         # Check if won
         w = True
@@ -242,7 +266,12 @@ def gameLoop():
 
         timer.tick(15)  # Tick fps
 
-
-gameLoop()
-pygame.quit()
-quit()
+if __name__ == '__main__':
+    try:
+        gameLoop()
+        pygame.quit()
+        quit()
+    finally:
+        ''' ============================================================ '''
+        mySocket.close()
+        ''' ============================================================ '''
