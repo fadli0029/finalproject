@@ -71,7 +71,7 @@ void loop() {
     activateMotor(255);
   }
   else if (command != ""){
-    //writeDisplayCSV(command,1);
+    writeDisplayCSV(command,1);
   }
   if(sending && sampleSensors()) {
     String response = String(sampleTime) + ",";
