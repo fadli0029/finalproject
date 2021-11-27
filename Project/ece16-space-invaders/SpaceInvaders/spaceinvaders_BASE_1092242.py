@@ -385,9 +385,6 @@ class SpaceInvaders(object):
         self.life2 = Life(742, 3)
         self.life3 = Life(769, 3)
         self.livesGroup = sprite.Group(self.life1, self.life2, self.life3)
-        self.livesLeft = 3 # adds lives counter for oled
-        self.lastlifecount = 0
-        self.lastscorecount = 100
 
     def reset(self, score):
         self.player = Ship()
@@ -409,7 +406,6 @@ class SpaceInvaders(object):
         self.create_audio()
         self.makeNewShip = False
         self.shipAlive = True
-        self.livesLeft = 3 # resets lives counter
 
     def make_blockers(self, number):
         blockerGroup = sprite.Group()
@@ -591,13 +587,8 @@ class SpaceInvaders(object):
         self.screen.blit(self.enemy4, (299, 420))
 
     def check_collisions(self):
-<<<<<<< HEAD
-        ''' ================================================================================================================= '''
         mySocket.sendto((",Score: "+ str(self.score)+ "   ").encode("utf-8"), address)  # sends Score notification to socket
-        ''' ================================================================================================================= '''
 
-=======
->>>>>>> aba852b92a69d647b79f42aea9944906603dc3fb
         sprite.groupcollide(self.bullets, self.enemyBullets, True, True)
 
         for enemy in sprite.groupcollide(self.enemies, self.bullets,
@@ -622,25 +613,18 @@ class SpaceInvaders(object):
                                           True, True).keys():
             #mark
             if self.life3.alive():
-                self.livesLeft -= 1
                 self.life3.kill()
             elif self.life2.alive():
-                self.livesLeft -= 1
                 self.life2.kill()
             elif self.life1.alive():
-                self.livesLeft -= 1
                 self.life1.kill()
             else:
                 self.gameOver = True
                 self.startGame = False
-                ''' =========================================================================================== '''
                 mySocket.sendto("Dead".encode("utf-8"), address)  # sends Game over notification to socket
-                ''' =========================================================================================== '''
 
             if not self.gameOver:
-                ''' =========================================================================================== '''
                 mySocket.sendto("Hit".encode("utf-8"), address)   # sends hit notification to socket
-                ''' =========================================================================================== '''
 
             self.sounds['shipexplosion'].play()
             ShipExplosion(player, self.explosionsGroup)
@@ -712,7 +696,6 @@ class SpaceInvaders(object):
 
             elif self.startGame:
                 if not self.enemies and not self.explosionsGroup:
-
                     currentTime = time.get_ticks()
                     if currentTime - self.gameTimer < 3000:
                         self.screen.blit(self.background, (0, 0))
@@ -752,13 +735,6 @@ class SpaceInvaders(object):
                     self.check_collisions()
                     self.create_new_ship(self.makeNewShip, currentTime)
                     self.make_enemies_shoot()
-
-
-                    #************************* sends data to oled only if a new value has occured
-                    if self.score != self.lastscorecount or self.lastlifecount != self.livesLeft:
-                        mySocket.sendto(("Lives Left:" + str(self.livesLeft) + "    ," + "Score: " + str(self.score) + "   ").encode("utf-8"),address)  # sends Score and life notification to socket
-                        self.lastlifecount = self.livesLeft
-                        self.lastscorecount = self.score
 
             elif self.gameOver:
                 currentTime = time.get_ticks()

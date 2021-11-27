@@ -591,13 +591,6 @@ class SpaceInvaders(object):
         self.screen.blit(self.enemy4, (299, 420))
 
     def check_collisions(self):
-<<<<<<< HEAD
-        ''' ================================================================================================================= '''
-        mySocket.sendto((",Score: "+ str(self.score)+ "   ").encode("utf-8"), address)  # sends Score notification to socket
-        ''' ================================================================================================================= '''
-
-=======
->>>>>>> aba852b92a69d647b79f42aea9944906603dc3fb
         sprite.groupcollide(self.bullets, self.enemyBullets, True, True)
 
         for enemy in sprite.groupcollide(self.enemies, self.bullets,
@@ -633,14 +626,10 @@ class SpaceInvaders(object):
             else:
                 self.gameOver = True
                 self.startGame = False
-                ''' =========================================================================================== '''
                 mySocket.sendto("Dead".encode("utf-8"), address)  # sends Game over notification to socket
-                ''' =========================================================================================== '''
 
             if not self.gameOver:
-                ''' =========================================================================================== '''
                 mySocket.sendto("Hit".encode("utf-8"), address)   # sends hit notification to socket
-                ''' =========================================================================================== '''
 
             self.sounds['shipexplosion'].play()
             ShipExplosion(player, self.explosionsGroup)
