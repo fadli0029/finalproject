@@ -2,12 +2,16 @@
 int ax = 0; int ay = 0; int az = 0;
 int ppg = 0;        // PPG from readPhotoSensor() (in Photodetector tab)
 int sampleTime = 0; // Time of last sample (in Sampling tab)
-const int buttonPin = 0; /*12;*/
+const int buttonPin1 = 0; /*12;*/
+const int buttonPin2 = 0; /*12;*/
+int x = 0;
+int y = 0;
+bool sending, oldStatus1, oldStatus2, isShoot;
 
-bool sending, oldStatus, isShoot;
-
-int currentState = 0;
-int lastButtonState;
+int currentState1 = 0;
+int lastButtonState1;
+int currentState2 = 0;
+int lastButtonState2;
 bool vibrate = false;
 unsigned long timer1 = millis();
 /*
@@ -20,14 +24,14 @@ void setup() {
   setupPhotoSensor();
   setupMotor();
   sending = false;
-  oldStatus = false;  // for button/buzzer
   isShoot = false;
 
   writeDisplay("Ready...", 1, true);
   writeDisplay("Set...", 2, false);
   writeDisplay("Play!", 3, false);
 
-  pinMode(buttonPin, INPUT_PULLUP);
+  pinMode(buttonPin1, INPUT_PULLUP);
+  pinMode(buttonPin2, INPUT_PULLUP);
 }
 
 /*
@@ -35,18 +39,6 @@ void setup() {
  */
 void loop() {
   //unsigned long currentMillis = millis();
-
-  /*BUTTON STATE CHECKING*/
-  currentState = !digitalRead(buttonPin);
-  if (currentState != lastButtonState) { 
-    if (oldStatus) {
-      isShoot = false;
-    }
-    if (oldStatus == false) {
-      isShoot = true;
-    }
-  }
-  lastButtonState = currentState;
 
   String command = receiveMessage();
   if(command == "stop") {
@@ -57,23 +49,55 @@ void loop() {
     sending = true;
     writeDisplay("Controller: On", 0, true);
   }
-  //else if(command == "Dead"){
-  //  sending = false;
-  //  writeDisplay("You Died!!!", 0, true);
-  //  vibrate = true;
-  //  timer1 = currentMillis;
-  //  activateMotor(255);
-  //}
-  //else if(command == "Hit"){
-  //  writeDisplay("You've been Hit!", 0, true);
-  //  vibrate = true;
-  //  timer1 = currentMillis;
-  //  activateMotor(255);
-  //}
-  //else{
-  //  writeDisplayCSV(command,1);
-  //}
+  else if(command == "choose"){
+    int both = false;
+      
+    while(1){
+      //print to display
+      writeDisplay("Select Tile!", 0, true);
+      String h = String(x)+"x"+String(y);
+      writeDisplay(h.c_str(), 1, false);
+      
+    // if button 1 ++
+      currentState1 = !digitalRead(buttonPin1);
+      if (currentState1 != lastButtonState1) { 
+        if (currentState1) {
+          x++;
+          both = true;
+        }
+        if(x == 7){
+          x =0;
+        }
+      }
+      lastButtonState1 = currentState1;
 
+    // if button 2 ++
+      currentState2 = !digitalRead(buttonPin2);
+      if (currentState2 != lastButtonState2) { 
+        if (currentState2) {
+          y++;
+          
+        }else{
+          both = false;
+        }
+        if(y == 7){
+          y =0;
+        }
+      }
+      lastButtonState2 = currentState2;
+
+    // if button 1 and 2 send and break
+      if(both){
+        sendMessage(String(x)+","+ String(y));
+        writeDisplay("Selecting",0,true);
+        break;
+      }
+    }
+  }else if(command !=""){
+    writeDisplay("",0,true);
+    writeDisplayCSV(command , 1);
+  }
+  
   if(sending && sampleSensors()) {
     //String response = String(sampleTime) + ",";
     //response += String(ax) + "," + String(ay) + "," + String(az);
@@ -87,9 +111,4 @@ void loop() {
       sendMessage(String(7));
     }
   }
-  //if(vibrate && (currentMillis - timer1 >500)){
-  //  vibrate = false;
-  //  deactivateMotor();
-  //}
-  oldStatus = isShoot;
 }
