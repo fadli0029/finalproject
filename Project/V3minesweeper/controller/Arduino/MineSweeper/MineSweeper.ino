@@ -102,7 +102,6 @@ void loop() {
         }
       }
       lastButtonState2 = currentState2;
-
     }
   }
 
@@ -111,9 +110,9 @@ void loop() {
     writeDisplayCSV(command , 1);
   }
   
-  if(sending && sampleSensors()) {
-    //String response = String(sampleTime) + ",";
-    //response += String(ax) + "," + String(ay) + "," + String(az);
-
+  if (sending && sampleSensors()) {
+    String response = String(sampleTime) + ",";
+    response += String(ax) + "," + String(ay) + "," + String(az);
+    sendMessage(response);
   }
 }
