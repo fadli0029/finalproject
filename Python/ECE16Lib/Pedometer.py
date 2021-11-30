@@ -1,4 +1,5 @@
 from ECE16Lib.CircularList import CircularList
+from scipy.signal import savgol_filter
 import ECE16Lib.DSP as filt
 import numpy as np
 
@@ -54,6 +55,19 @@ class Pedometer:
 
     self.__l1.add(l1)
     self.__new_samples += num_add
+
+  def savgolFilt(self):
+    x = np.array(self.__l1[ -5: ])
+    x = savgol_filter(x,5,4)
+    self.__filtered.add(x.tolist())
+
+    count, peaks = filt.count_peaks(x, self.__thresh_low, self.__thresh_high)
+
+    self.__steps += count
+    self.__new_samples = 0
+
+    # Return the step count, peak locations, and filtered data
+    return self.__steps, peaks, np.array(self.__filtered)
 
   """
   Process the new data to update step count
