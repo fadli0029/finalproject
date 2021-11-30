@@ -6,13 +6,14 @@ const int buttonPin1 = 0; /*12;*/
 const int buttonPin2 = 0; /*12;*/
 int x = 0;
 int y = 0;
-bool sending, oldStatus1, oldStatus2, isShoot;
+bool sending, oldStatus1, oldStatus2,both;
 
 int currentState1 = 0;
 int lastButtonState1;
 int currentState2 = 0;
 int lastButtonState2;
-bool vibrate = false;
+bool bothlast = false;
+
 unsigned long timer1 = millis();
 
 /*
@@ -25,7 +26,6 @@ void setup() {
   setupPhotoSensor();
   setupMotor();
   sending = false;
-  isShoot = false;
 
   writeDisplay("Ready...", 1, true);
   writeDisplay("Set...", 2, false);
@@ -53,13 +53,25 @@ void loop() {
   }
 
   else if(command == "choose") {
-    int both = false;
+
       
     while(1) {
       // print to display
       writeDisplay("Select Tile!", 0, true);
       String h = String(x)+"x"+String(y);
       writeDisplay(h.c_str(), 1, false);
+
+      // sending to computer
+      both  = currentState1 && currentState2;
+      // if button 1 and 2 send and break
+      if(both != bothlast) {
+        if(both){
+            sendMessage(String(x)+","+ String(y));
+            writeDisplay("Selecting",0,true);
+            break;
+            }
+      }
+      bothlast = both;
       
       // if button 1 ++
       currentState1 = !digitalRead(buttonPin1);
@@ -84,18 +96,13 @@ void loop() {
         else {
           both = false;
         }
+
         if(y == 7) {
           y =0;
         }
       }
       lastButtonState2 = currentState2;
 
-      // if button 1 and 2 send and break
-      if(both) {
-        sendMessage(String(x)+","+ String(y));
-        writeDisplay("Selecting",0,true);
-        break;
-      }
     }
   }
 
@@ -108,13 +115,5 @@ void loop() {
     //String response = String(sampleTime) + ",";
     //response += String(ax) + "," + String(ay) + "," + String(az);
 
-    if (isShoot) {
-      //sendMessage(String(2) + "," + response);
-      sendMessage(String(2));
-    }
-    else {
-      //sendMessage(String(7) + "," + response);
-      sendMessage(String(7));
-    }
   }
 }
