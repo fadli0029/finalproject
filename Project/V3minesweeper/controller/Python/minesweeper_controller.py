@@ -40,9 +40,13 @@ class PygameController:
         prev_y = 0
         previous_time = time()
         while True:
+            # NOTE: only sends the x and y coord if
+            # num of jumping jacks is valid. And, we
+            # don't really need to send number of 
+            # jumping jacks to Minesweeper.py
             isclicked = 0
-            # must send choose to enter state needs to be fixed to be sent to this state via a command
-            # if enough time has elapsed, clear the axis, and plot az
+            # must send choose to enter state needs to 
+            # be fixed to be sent to this state via a command
             current_time = time()
             if (current_time - previous_time > 4):
               previous_time = current_time
@@ -51,16 +55,20 @@ class PygameController:
             message = self.comms.receive_message()
 
             if (message != None):
+                print(message) # receives x and y coord entered by user
                 f_command = None
                 try:
-                    m0 = message
-                    print("m0: " + str(m0))
                     (x, y) = message.split(',')
                     isclicked = 2
-                    a = abs(prev_x -int(x))+abs(prev_y - int(y))
+                    a = abs(prev_x - int(x)) + abs(prev_y - int(y))
+                    # [where a is the number of jumping jacks needed]
                     prev_x = int(x)
                     prev_y = int(y)
                     controller.comms.send_message("Payment Required,"+str(a)+" Jumping Jacks")
+
+
+                
+                #jumping_jacks = self.comms.receive_message()
 
                 except ValueError:  # if corrupted data, skip the sample
                     print("failed")
@@ -98,7 +106,6 @@ if __name__ == "__main__":
     serial_name = "/dev/cu.esp32Spark-ESP32SPP"
     # serial_name = "/dev/ttyUSB0"
     baud_rate = 115200
-    # controller = PygameController(serial_name, baud_rate, the_num_samples, the_refresh_time, sensitivity)
     controller = PygameController(serial_name, baud_rate)
 
     try:

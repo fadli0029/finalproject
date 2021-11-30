@@ -2,7 +2,6 @@ from ECE16Lib.Communication import Communication
 from ECE16Lib.CircularList import CircularList
 from ECE16Lib.Pedometer import Pedometer
 from matplotlib import pyplot as plt
-import ECE16Lib.DSP as filt
 from time import time
 import numpy as np
 
@@ -51,11 +50,10 @@ if __name__ == "__main__":
           theSteps = steps
           print("theSteps: "+str(theSteps))
           
-          plt.cla()
+          # plt.cla()
           # plt.plot(filtered) #UNCOMMENT THIS LINE TO SEE PLOT
-
-          plt.show(block=False)
-          plt.pause(0.001)
+          # plt.show(block=False)
+          # plt.pause(0.001)
 
   except(Exception, KeyboardInterrupt) as e:
     print(e)                     # Exiting the program due to exception

@@ -216,17 +216,19 @@ def gameLoop():
         ''' ============================================================ '''
         # added here [Fade][justin]
         msg, addr = check_input_udp_socket()
+        clickstat = None
         if msg is not None:
+            print("Command: " + str(msg))
             try:
-                (msg, x, y) = msg.split(',')
+                (clickstat, x, y) = msg.split(',')
 
                 x_shifted = int(x) * 31 + 34  # conversion equations
                 y_shifted = int(y) * 33 + 116
+
             except ValueError:      # if corrupted data, skip the sample
                 continue
-            print("Command: " + str(msg))
 
-        if msg == "click":
+        if clickstat == "click":
             for i in grid:
                 for j in i:
                     #coord = pygame.mouse.get_pos()
