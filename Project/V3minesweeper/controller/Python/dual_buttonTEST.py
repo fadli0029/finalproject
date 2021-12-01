@@ -19,10 +19,12 @@ mySocket.setblocking(False)
 class PygameController:
     comms = None
     ped = None
+    ref_t = 0
 
     def __init__(self, serial_name, baud_rate, num_samples=250, fs=50, rt=0.1):
         self.comms = Communication(serial_name, baud_rate)
         self.ped = Pedometer(num_samples, fs, [])
+        self.ref_t = rt
 
     def run(self):
         # 1. make sure data sending is stopped by ending streaming
@@ -53,7 +55,7 @@ class PygameController:
 
         previous_time = time()
         while True:
-            message = "" # re-emptied message
+            print("here")
             controller.comms.send_message("choose")
             message = self.comms.receive_message()
             if (message != None):
@@ -72,43 +74,48 @@ class PygameController:
                     print("coordinates receiving ERROR!")
                     continue
 
-                if (isClicked):
-                    validate = True # ask for jumping jacks
-                    track_jumps = 0
-                    prev_time = 0
-                    print("still counting your jumping jacks!")
-                    controller.comms.send_message("Payment Required,"+str(jj_n)+" Jumping Jacks")
-                    while (validate):
-                        message = self.comms.receive_message()
-                        if(message != None):
-                            print("message in jumping jacks loop: "+message)
-                            try:
-                                (m1, m2, m3, m4) = message.split(',')
-                            except ValueError:
-                                print("Jumping Jacks count ERROR!")
-                                continue
+                # it was indented here before
 
-                            # add the new values to the circular lists
-                            self.ped.add(int(m2),int(m3),int(m4))
+            self.comms.clear()
+            if (isClicked):
+                validate = True # ask for jumping jacks
+                track_jumps = 0
+                prev_time = 0
+                print("Counting your jumping jacks...")
+                # controller.comms.send_message("Payment Required,"+str(jj_n)+" Jumping Jacks")
+                controller.comms.send_message("jj")
+                while (validate):
+                    msg = self.comms.receive_message()
+                    if(msg != None):
+                        print("message in jumping jacks loop: "+msg)
+                        try:
+                            (m1, m2, m3, m4) = msg.split(',')
+                        except ValueError:
+                            print("Jumping Jacks count ERROR!")
+                            continue
 
-                            current_time = time()
-                            if (current_time - prev_time > rt):
-                                prev_time = current_time
-                                jumps, peaks, filtered = self.ped.process()
-                                track_jumps = jumps
-                                print("theSteps: "+str(track_jumps))
+                        # add the new values to the circular lists
+                        self.ped.add(int(m2),int(m3),int(m4))
 
-                                if (track_jumps == jj_n):
-                                    validate = False
+                        current_time = time()
+                        if (current_time - prev_time > self.ref_t):
+                            prev_time = current_time
+                            jumps, peaks, filtered = self.ped.process()
+                            track_jumps = jumps
+                            print("theSteps: "+str(track_jumps))
 
-                    print("jumping jacks VALIDATED!")
-                    print("sending coordinates to server!")
-                                
-                    f_command = "click" + "," + str(x) + "," + str(y)
+                            if (track_jumps == jj_n):
+                                print("ENTERED")
+                                validate = False
 
-                if f_command is not None:
-                    print(f_command)
-                    mySocket.send(f_command.encode("UTF-8"))
+                print("jumping jacks VALIDATED!")
+                print("sending coordinates to server!")
+                            
+                f_command = "click" + "," + str(x) + "," + str(y)
+
+            if f_command is not None:
+                print(f_command)
+                mySocket.send(f_command.encode("UTF-8"))
 
                 # try:
                 #    data = mySocket.recv(1024)

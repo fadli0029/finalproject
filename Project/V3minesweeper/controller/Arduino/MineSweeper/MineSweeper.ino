@@ -52,6 +52,7 @@ void loop() {
     writeDisplay("Controller: On", 0, true);
   }
 
+
   else if(command == "choose") {
       
     while(1) {
@@ -98,12 +99,11 @@ void loop() {
     }
   }
 
-  else if(command !="") {
+  else if(command !="jj") {
     sending = true;
     writeDisplay("",0,true);
-    //writeDisplayCSV(command , 1);
   }
-  
+
   if (sending && sampleSensors()) {
     String response = String(sampleTime) + ",";
     response += String(ax) + "," + String(ay) + "," + String(az);
