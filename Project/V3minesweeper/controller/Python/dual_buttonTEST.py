@@ -43,6 +43,7 @@ class PygameController:
         print("Use <CTRL+C> to exit the program.\n")
 
         isClicked = False
+        sendChoose = True
         previous_time = 0
         prev_x = 0
         prev_y = 0
@@ -56,7 +57,10 @@ class PygameController:
         previous_time = time()
         while True:
             print("here")
-            controller.comms.send_message("choose")
+            if sendChoose:
+                controller.comms.send_message("choose")
+                sendChoose = False
+                
             message = self.comms.receive_message()
             if (message != None):
                 print(message) # receives x and y coord entered by user
@@ -68,6 +72,7 @@ class PygameController:
                     print("jj_n: " + str(jj_n))
                     prev_x = int(x)
                     prev_y = int(y)
+                    sendChoose = True
                     isClicked = True
                 
                 except ValueError:  # if corrupted data, skip the sample
