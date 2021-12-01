@@ -14,11 +14,6 @@ int currentState2 = 0;
 int lastButtonState2;
 bool bothlast = false;
 
-//unsigned long timer1 = millis();
-
-/*
- * Initialize the various components of the wearable
- */
 void setup() {
   setupAccelSensor();
   setupCommunication();
@@ -35,11 +30,7 @@ void setup() {
   pinMode(buttonPin2, INPUT_PULLUP);
 }
 
-/*
- * The main processing loop
- */
 void loop() {
-  //unsigned long currentMillis = millis();
 
   String command = receiveMessage();
   if(command == "stop") {
@@ -56,7 +47,6 @@ void loop() {
   else if(command == "choose") {
       
     while(1) {
-      // print to display
       writeDisplay("Select Tile!", 0, true);
       String h = "x: "+String(x)+" y: "+String(y);
       writeDisplay(h.c_str(), 1, false);

@@ -49,14 +49,8 @@ class PygameController:
         prev_y = 0
         jj_n = 0
 
-        # NOTE: only sends the x and y coord if
-        # num of jumping jacks is valid. And, we
-        # don't really need to send number of 
-        # jumping jacks to Minesweeper.py
-
         previous_time = time()
         while True:
-            print("here")
             if sendChoose:
                 controller.comms.send_message("choose")
                 sendChoose = False
@@ -79,20 +73,16 @@ class PygameController:
                     print("coordinates receiving ERROR!")
                     continue
 
-                # it was indented here before
-
             self.comms.clear()
             if (isClicked):
                 validate = True # ask for jumping jacks
                 track_jumps = 0
                 prev_time = 0
                 print("Counting your jumping jacks...")
-                # controller.comms.send_message("Payment Required,"+str(jj_n)+" Jumping Jacks")
                 controller.comms.send_message("jj")
                 while (validate):
                     msg = self.comms.receive_message()
                     if(msg != None):
-                        print("message in jumping jacks loop: "+msg)
                         try:
                             (m1, m2, m3, m4) = msg.split(',')
                         except ValueError:
@@ -107,10 +97,9 @@ class PygameController:
                             prev_time = current_time
                             jumps, peaks, filtered = self.ped.process()
                             track_jumps = jumps
-                            print("theSteps: "+str(track_jumps))
+                            print("Jumping Jacks: "+str(track_jumps))
 
                             if (track_jumps == jj_n):
-                                print("ENTERED")
                                 validate = False
 
                 print("jumping jacks VALIDATED!")
@@ -122,22 +111,11 @@ class PygameController:
                 print(f_command)
                 mySocket.send(f_command.encode("UTF-8"))
 
-                # try:
-                #    data = mySocket.recv(1024)
-                #    data = data.decode("utf-8")
-                #    controller.comms.send_message(data)
-                #    #print("Response: " + data)
-                # except BlockingIOError:
-                #    pass  # do nothing if there's no data
-
 
 if __name__ == "__main__":
 
-    # the_num_samples = 100               # 2 seconds of data @ 50Hz
-    # the_refresh_time = 0.01             # update the processing every 0.01s
-
-    #serial_name = "/dev/cu.esp32Spark-ESP32SPP"
-    serial_name = "/dev/ttyUSB0"
+    #serial_name = "/dev/cu.esp32Spark-ESP32SPP"    # [JUSTIN]
+    serial_name = "/dev/ttyUSB0"                    # [FADE]
     baud_rate = 115200
     controller = PygameController(serial_name, baud_rate)
 
