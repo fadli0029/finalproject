@@ -40,7 +40,7 @@ Space Invader :space_invader:!
 Objectives GC1 :bulb:
 ---------------------
 
-Features and Improvements GC1 :hammer_and_wrench:
+Improvements and Features GC1 :hammer_and_wrench:
 -------------------------------------------------
 __Improvements:__  
 1. __Smoother tilting__ when moving left and right, smooth like butter :butter:. This is achieved via __Digital Signal Processing__, utilizing `ECE16Lib` modules.
