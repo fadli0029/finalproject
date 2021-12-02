@@ -19,7 +19,7 @@ Table of contents :bookmark_tabs:
   * [Features](#features-star2)
   * [Implementations](#implementations-gc2-computer)
   * [Demo](#demo-gc2-clapper)
-* Teammates Roles
+* [Teammates Roles](#teammates-roles-boy-man-)
 
 </br>  
 
