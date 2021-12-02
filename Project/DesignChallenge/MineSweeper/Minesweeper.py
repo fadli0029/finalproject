@@ -20,7 +20,7 @@ grid_color = (128, 128, 128)
 #game_height = 10   # Change this to increase size
 game_width = 7      # Change this to increase size
 game_height = 7     # Change this to increase size
-numMine = 9     # Number of mines
+numMine = 48    # Number of mines
 grid_size = 32  # Size of grid (WARNING: macke sure to change the images dimension as well)
 border = 16     # Top border
 top_border = 100  # Left, Right, Bottom border
@@ -29,6 +29,8 @@ display_height = grid_size * game_height + border + top_border  # Display height
 gameDisplay = pygame.display.set_mode((display_width, display_height))  # Create display
 timer = pygame.time.Clock()  # Create timer
 pygame.display.set_caption("Minesweeper")  # S Set the caption of window
+address = None # holds address to return value to
+resetESP32 = False
 
 # Import files
 spr_emptyGrid = pygame.image.load("Sprites/empty.png")
@@ -196,6 +198,28 @@ def gameLoop():
         # Reset screen
         gameDisplay.fill(bg_color)
 
+        ''' ============================================================ '''
+        # added here [Fade][justin]
+        msg, addr = check_input_udp_socket()
+        clickstat = None
+        if msg is not None:
+            if msg == "R" and (gameState == "Game Over" or gameState == "Win"):
+                gameState = "Exit"
+                gameLoop()
+                break;
+
+
+            try:
+                address = addr
+                (clickstat, x, y) = msg.split(',')
+                print("You selected tile at " + str(x) + ", " + str(y))
+                x_shifted = int(x) * 31 + 34  # conversion equations
+                y_shifted = int(y) * 33 + 116
+
+            except ValueError:  # if corrupted data, skip the sample
+                continue
+
+
         # User inputs
         for event in pygame.event.get():
             # Check if player close window
@@ -213,19 +237,6 @@ def gameLoop():
                         # and make a recursion call by calling gameLoop()
                         # [commented: Fade]
 
-        ''' ============================================================ '''
-        # added here [Fade][justin]
-        msg, addr = check_input_udp_socket()
-        clickstat = None
-        if msg is not None:
-            try:
-                (clickstat, x, y) = msg.split(',')
-                print("You selected tile at " + str(x) + ", " + str(y))
-                x_shifted = int(x) * 31 + 34  # conversion equations
-                y_shifted = int(y) * 33 + 116
-
-            except ValueError:      # if corrupted data, skip the sample
-                continue
 
         if clickstat == "click":
             for i in grid:
@@ -254,12 +265,14 @@ def gameLoop():
                     w = False
         if w and gameState != "Exit":
             gameState = "Win"
+            mySocket.sendto(("Won").encode("utf-8"),address)  # sends Score and life notification to socket
 
         # Draw Texts
         if gameState != "Game Over" and gameState != "Win":
             t += 1
         elif gameState == "Game Over":
             drawText("Game Over!", 50)
+            mySocket.sendto(("Loss").encode("utf-8"),address)  # sends W/L to python code
             drawText("R to restart", 35, 50)
             for i in grid:
                 for j in i:

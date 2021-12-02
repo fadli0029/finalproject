@@ -17,7 +17,7 @@ unsigned long timeEnd = 0;                    // End time timing variable
 bool sampleSensors() {
   timeEnd = micros();
   if(timeEnd - timeStart >= sampleDelay) {
-    displaySampleRate(timeEnd);
+   // displaySampleRate(timeEnd);
     timeStart = timeEnd;
 
     // Read the sensors and store their outputs in global variables

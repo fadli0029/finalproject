@@ -45,6 +45,8 @@ class PygameController:
 
         isClicked = False
         sendChoose = True
+        GameOver = False
+        holdreset = False
         previous_time = 0
         prev_x = 0
         prev_y = 0
@@ -52,12 +54,30 @@ class PygameController:
 
         previous_time = time()
         while True:
-            if sendChoose:
+
+            try:
+                data = mySocket.recv(1024)
+                data = data.decode("utf-8")
+                if not GameOver:
+                    controller.comms.send_message(data)
+                if data != None:
+                    GameOver = True
+
+            except BlockingIOError:
+                pass  # do nothing if there's no data
+
+            if sendChoose and not GameOver:
                 controller.comms.send_message("choose")
+                holdreset = False
+
                 sendChoose = False
+
                 
             message = self.comms.receive_message()
-            if (message != None):
+            if message != None:
+                print(message)
+
+            if (message != None) and not GameOver:
                 print("Waiting for User to enter coordinates...") # receives x and y coord entered by user
                 try:
                     (x, y) = message.split(',')
@@ -71,6 +91,11 @@ class PygameController:
                
                 except ValueError:  # if corrupted data, skip the sample
                     continue
+            # if (message != None) and (message == "Reset\r\n"):   #reset
+            #     mySocket.send(("R").encode("UTF-8"))
+            #     GameOver = False
+            #     holdreset = True
+
 
             f_command = None
             if (isClicked):
@@ -96,10 +121,11 @@ class PygameController:
                             prev_time = current_time
                             track_jumps, peaks, filtered = self.ped.process()
                             print("You did " + str(track_jumps) + " Jumping Jacks!")
-
-                            if (track_jumps == jj_n):
+                            controller.comms.send_message("Jumping Jacks!,Required: "+str(jj_n-track_jumps))
+                            if (track_jumps >= jj_n):
                                 validate = False
 
+                controller.comms.send_message("Jumping Jacks!  ,Completed!!!    ")
                 print("Jumping Jacks VALIDATED!")
                 print("sending coordinates to server...")
                             
@@ -113,8 +139,8 @@ class PygameController:
 
 if __name__ == "__main__":
 
-    # serial_name = "/dev/cu.esp32Spark-ESP32SPP"    # [JUSTIN]
-    serial_name = "/dev/ttyUSB0"                     # [FADE]
+    serial_name = "/dev/cu.esp32Spark-ESP32SPP"    # [JUSTIN]
+    #serial_name = "/dev/ttyUSB0"                     # [FADE]
     baud_rate = 115200
     controller = PygameController(serial_name, baud_rate)
 

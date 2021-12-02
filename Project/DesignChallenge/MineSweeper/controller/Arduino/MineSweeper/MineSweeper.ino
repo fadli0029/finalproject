@@ -13,6 +13,7 @@ int lastButtonState1;
 int currentState2 = 0;
 int lastButtonState2;
 bool bothlast = false;
+bool resetState = false;
 
 void setup() {
   setupAccelSensor();
@@ -57,8 +58,8 @@ void loop() {
       // if button 1 and 2 send and break
       if(both != bothlast) {
         if(both) {
-          sendMessage(String(x)+","+ String(y));
           writeDisplay("Selecting",0,true);
+          sendMessage(String(x)+","+ String(y));
           break;
         }
       }
@@ -86,12 +87,42 @@ void loop() {
       }
       lastButtonState2 = currentState2;
     }
-  }
-
-  else if(command !="jj") {
+  }else if(command =="jj") {
     sending = true;
     writeDisplay("",0,true);
+
+  }else if(command == "Won"){
+    writeDisplay("You Won!!!      ",0,true);
+   // writeDisplay("Press R to reset",1,false);
+    resetState = true;
+  }else if(command == "Loss"){
+    writeDisplay("Game Over!      ",0,true);
+    //writeDisplay("Press R to reset",1,false);
+    resetState = true;
+
+  }else if(command != ""){
+    writeDisplayCSV(command,1);
   }
+
+//   if(resetState){
+//     resetState = false;
+//     sending = false;
+//     x=0;
+//     y=0;
+//     while(1){
+//       currentState1 = !digitalRead(buttonPin1);
+//       if (currentState1 != lastButtonState1) {
+//         if (currentState1) {
+//           sendMessage("Reset");
+//           break;
+//         }
+//       }
+//       lastButtonState1 = currentState1;
+//     }
+//   }
+
+
+
 
   if (sending && sampleSensors()) {
     String response = String(sampleTime) + ",";
