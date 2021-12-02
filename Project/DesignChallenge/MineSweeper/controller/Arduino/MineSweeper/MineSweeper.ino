@@ -95,12 +95,12 @@ void loop() {
   }
   else if(command == "Won")  {
     writeDisplay("You Won!!!      ",0,true);
-   // writeDisplay("Press R to reset",1,false);
+    writeDisplay("Press R to reset",1,false);
     resetState = true;
   }
   else if(command == "Loss") {
     writeDisplay("Game Over!      ",0,true);
-    //writeDisplay("Press R to reset",1,false);
+    writeDisplay("Press R to reset",1,false);
     resetState = true;
 
   }
