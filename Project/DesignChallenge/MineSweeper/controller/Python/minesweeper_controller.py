@@ -92,15 +92,20 @@ class PygameController:
                 except ValueError:  # if corrupted data, skip the sample
                     continue
 
-            # if (message != None) and (message == "Reset\r\n"):   #reset
-            #     mySocket.send(("R").encode("UTF-8"))
-            #     GameOver = False
-            #     holdreset = True
+            if (message != None) and (message == "Reset\r\n"):   #reset
+                mySocket.send(("R").encode("UTF-8"))
+                GameOver = False
+                sleep(0.5)
+                try:
+                    a = mySocket.recv(1024)
+                except BlockingIOError:
+                    pass  # do nothing if there's no data
+
+
 
             if (message != None) and (message == "Reset\r\n"):   #reset
                 mySocket.send(("R").encode("UTF-8"))
                 GameOver = False
-                holdreset = True
                 sleep(0.5)
                 try:
                     a = mySocket.recv(1024)
@@ -131,7 +136,7 @@ class PygameController:
                             prev_time = current_time
                             track_jumps, peaks, filtered = self.ped.process()
                             print("You did " + str(track_jumps) + " Jumping Jacks!")
-                            controller.comms.send_message("Jumping Jacks Required: "+str(jj_n-track_jumps))
+                            controller.comms.send_message("Jumping Jacks   ,Required: "+str(jj_n-track_jumps))
                             if (track_jumps >= jj_n):
                                 validate = False
 
