@@ -44,9 +44,10 @@ Features and Improvements GC1 :hammer_and_wrench:
 __Improvements:__  
 1. __Smoother tilting__ when moving left and right, smooth like butter :butter:. This is achieved via __Digital Signal Processing__, utilizing `ECE16Lib` modules.
 2. __Decoupled moving and firing__, user can do both silmutaneously!
+3. Player can ideally and effectively __fire via button__ rather then tilting the breadboard.
 
 __Features:__  
-1. User can see their __score dispalyed on the OLED__.
+1. Player can see their __score dispalyed on the OLED__.
 2. Making use of the __buzz motor__, player will feel __vibration on the controller__ when get hit by the space invaders! Don't worry, it ~~doesn't~~ hurts.
 3. __Game statistics__, such as __lives count__, __game over status__, and __score__, can be seen directly from the OLED
 
@@ -82,7 +83,7 @@ Then from our observation, the desired thresholds for each axis are as the follo
 
 <ins>Tilting right</ins>:  __x-axis__-acclerometer-value `>=` __1655__  
 
-:heavy_exclamation_mark: In both cases, __z-axis__-accelerometer-value `>` 2200
+> :heavy_exclamation_mark: In both cases, __z-axis__-accelerometer-value `>` 2200
 
 Should 2 be choosen as the sensitivity level, then those values are scaled in the following manner:  
 ```python
