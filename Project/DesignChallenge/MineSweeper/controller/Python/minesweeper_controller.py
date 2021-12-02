@@ -45,8 +45,10 @@ class PygameController:
 
         isClicked = False
         sendChoose = True
+
         GameOver = False
         holdreset = False
+
         previous_time = 0
         prev_x = 0
         prev_y = 0
@@ -91,6 +93,7 @@ class PygameController:
                
                 except ValueError:  # if corrupted data, skip the sample
                     continue
+
             # if (message != None) and (message == "Reset\r\n"):   #reset
             #     mySocket.send(("R").encode("UTF-8"))
             #     GameOver = False
@@ -121,7 +124,7 @@ class PygameController:
                             prev_time = current_time
                             track_jumps, peaks, filtered = self.ped.process()
                             print("You did " + str(track_jumps) + " Jumping Jacks!")
-                            controller.comms.send_message("Jumping Jacks!,Required: "+str(jj_n-track_jumps))
+                            controller.comms.send_message("Jumping Jacks Required: "+str(jj_n-track_jumps))
                             if (track_jumps >= jj_n):
                                 validate = False
 

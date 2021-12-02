@@ -87,20 +87,24 @@ void loop() {
       }
       lastButtonState2 = currentState2;
     }
-  }else if(command =="jj") {
+  }
+  else if(command =="jj") {
     sending = true;
     writeDisplay("",0,true);
 
-  }else if(command == "Won"){
+  }
+  else if(command == "Won")  {
     writeDisplay("You Won!!!      ",0,true);
    // writeDisplay("Press R to reset",1,false);
     resetState = true;
-  }else if(command == "Loss"){
+  }
+  else if(command == "Loss") {
     writeDisplay("Game Over!      ",0,true);
     //writeDisplay("Press R to reset",1,false);
     resetState = true;
 
-  }else if(command != ""){
+  }
+  else if(command != "") {
     writeDisplayCSV(command,1);
   }
 
@@ -120,10 +124,6 @@ void loop() {
 //       lastButtonState1 = currentState1;
 //     }
 //   }
-
-
-
-
   if (sending && sampleSensors()) {
     String response = String(sampleTime) + ",";
     response += String(ax) + "," + String(ay) + "," + String(az);
