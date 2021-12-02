@@ -52,7 +52,7 @@ __Features:__
 
 Implementations GC1 :computer:
 ------------------------------
-<ins>1. Obtaining seamless movements via DSP </ins>  
+<ins>1. Obtaining seamless movements via DSP</ins>  
 Achieving this is a two-part process: __finding the right threshold__ and __applying the DSP__. For the DSP, we applied __moving average__ on the accelerometer data coming in:  
 ```python
 def moving_average(self, x, win):
@@ -70,14 +70,33 @@ def process(self, target, win):
 ```
 We noticed that this was sufficient enough to give us not just smoother tiling, but less delay. Further processing didn't turn out as good as this one. As for thresholding the accelerometer value, such that it's not too sensitive, we decided to make two __sensitivity levels__ available, __level 1__ and __level 2__.  
 
-Level 1: the program will respond to a tilt (left or right) only up to __45 degrees__.  
+__Level 1:__ the program will respond to a tilt (left or right) only up to __45 degrees__.  
 
-Level 2: the program will respond to a tilt (left or right) up to __90 degrees__.  
+__Level 2:__ the program will respond to a tilt (left or right) up to __90 degrees__.  
 
 Then from our observation, the desired thresholds for each axis are as the following:  
 
-<ins>Tilting left</ins>  
-The accelerometer value of for the x-axis is less than or equal to 2300__.
+<ins>Stationary</ins>:     __1950__  `<=`  __x-axis__-acclerometer-value `<=` __1970__  
+
+<ins>Tilting left</ins>:   __x-axis__-acclerometer-value `<=` __2300__  
+
+<ins>Tilting right</ins>:  __x-axis__-acclerometer-value `>=` __1655__  
+
+:heavy_exclamation_mark: In both cases, __z-axis__-accelerometer-value `>` 2200
+
+Should 2 be choosen as the sensitivity level, then those values are scaled in the following manner:  
+```python
+if (self.the_sensitivity == 2):
+  adj_xLeft = 500
+  adj_xRight = 140
+  adj_z = 230
+
+adjusted_thresLeft = 2300+adj_xLeft
+adjusted_thresRight = 1655-adj_xRight
+adjusted_thresZ = 2200-adj_z
+```
+
+<ins>2. Decoupling moving and firing</ins>  
 
 
 Demo GC1 :clapper:

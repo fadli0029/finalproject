@@ -90,7 +90,7 @@ class PygameController:
       # tilting
       # az can drop to lowest to 2.2k, regardless tilted left or right
       # ax can go up to 2300 when tilt left and as low as 1655 when tilt right
-      if (x_cmd[-1] <= adjusted_thresLeft and x_cmd[-1] > 1956 and z_cmd[-1] > adjusted_thresZ):
+      if (x_cmd[-1] <= adjusted_thresLeft and x_cmd[-1] > 1950 and z_cmd[-1] > adjusted_thresZ):
         # tilt left
         if (is_fire == 2):
           command = "LFIRE"
