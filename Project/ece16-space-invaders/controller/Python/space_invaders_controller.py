@@ -107,10 +107,6 @@ class PygameController:
 
   def run(self):
 
-    # 1. make sure data sending is stopped by ending streaming
-    lastMessage =  None
-    shoot = False
-
     self.comms.send_message("stop")
     self.comms.clear()
 

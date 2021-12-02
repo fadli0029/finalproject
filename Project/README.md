@@ -48,12 +48,14 @@ __Improvements:__
 3. Player can ideally and effectively __fire via button__ rather then tilting the breadboard.
 
 __Features:__  
-1. Player can see their __score dispalyed on the OLED__.
-2. Making use of the __buzz motor__, player will feel __vibration on the controller__ when get hit by the space invaders! Don't worry, it ~~doesn't~~ hurts.
+1. Player can see their __score displayed on the OLED__.
+2. Making use of the __buzz motor__, player will feel __vibration on the controller__ when he/she gets hit by the space invaders! Don't worry, it ~~doesn't~~ hurts.
 3. __Game statistics__, such as __lives count__, __game over status__, and __score__, can be seen directly from the OLED
 
 Implementations GC1 :computer:
 ------------------------------
+> __Improvements:__  
+
 <ins>1. Obtaining seamless movements via DSP</ins>  
 Achieving this is a two-part process: __finding the right threshold__ and __applying the DSP__. For the DSP, we applied __moving average__ on the accelerometer data coming in:  
 ```python
@@ -70,13 +72,13 @@ def process(self, target, win):
   out = self.moving_average(target, win)
   return out
 ```
-We noticed that this was sufficient enough to give us not just smoother tiling, but less delay. Further processing didn't turn out as good as this one. As for thresholding the accelerometer value, such that it's not too sensitive, we decided to make two __sensitivity levels__ available, __level 1__ and __level 2__.  
+We noticed that this was sufficient enough to give us not just smoother tilting, but less delay. Further processing didn't turn out as good as this one. As for thresholding the accelerometer value, such that it's not too sensitive, we decided to make two __sensitivity levels__ available, __level 1__ and __level 2__.  
 
 __Level 1:__ the program will respond to a tilt (left or right) only up to __45 degrees__.  
 
 __Level 2:__ the program will respond to a tilt (left or right) up to __90 degrees__.  
 
-Then from our observation, the desired thresholds for each axis are as the following:  
+Then, from our observation, the desired thresholds for each axis are as the following:  
 
 <ins>Stationary</ins>:     __1950__  `<=`  __x-axis__-acclerometer-value `<=` __1970__  
 
@@ -139,7 +141,6 @@ def generatingCommand(self, xf_input, yf_input, zf_input, is_fire):
     # shooting but not moving
     command = "FIRE"
 
-  # previous upper bound: 1956
   if (self.is_between(x_cmd[-1], 1950, 1970) == False):
     # tilting
     # az can drop to lowest to 2.2k, regardless tilted left or right
@@ -217,6 +218,129 @@ def update_udp_socket(self, direction):
 
     game.screen.blit(self.image, self.rect)
 ```
+
+<ins>3. Enabling button press as firing mechanism</ins>  
+As already seen in previous code snippets for the other implemtations above, the `is_fire` boolean is invoked if the button is pressed. In the `run()` method inside `space_invaders_controller.py` (I represent other lines as '...' if they are not important to demonstrate this concept):
+```python
+  def run(self):
+
+    # send "start" message to MCU
+    ...
+    ...
+
+    previous_time = 0
+    while True:
+      message = self.comms.receive_message()
+
+      if(message != None):
+        f_command = None
+        try:
+          (m0, m1, m2, m3, m4) = message.split(',')
+        except ValueError:
+          continue
+
+        # add m1,m2,m3,m4 to ax, ay, az circular lists
+        ...
+        ...
+        ...
+
+        current_time = time()
+        if (current_time - previous_time > self.refresh_time):
+          previous_time = current_time
+
+          # DSP
+          ...
+          ...
+
+          f_command, valx, valz = self.generatingCommand(self.ax_f, self.ay_f, self.az_f, int(m0))
+          # m0 = 2, means the player press the button to fire
+          # m0 = 7, means the player press the button to fire
+          if f_command is not None:
+            mySocket.send(f_command.encode("UTF-8"))
+
+        # receives message from server (for displaying game statistics on OLED)
+        ...
+        ...
+        ...
+```
+The value of `m0` is determined by the button press. In the arduino side, `SpaceInvadersController.ino`:  
+
+```cpp
+currentState = !digitalRead(buttonPin);
+if (currentState != lastButtonState) { 
+  if (oldStatus) {
+    isShoot = false;
+  }
+  if (oldStatus == false) {
+    isShoot = true;
+  }
+}
+lastButtonState = currentState;
+
+// other stuffs like OLED, etc
+...
+...
+...
+
+if(sending && sampleSensors()) {
+  String response = String(sampleTime) + ",";
+  response += String(ax) + "," + String(ay) + "," + String(az);
+
+  if (isShoot) {
+    sendMessage(String(2) + "," + response);
+  }
+  else {
+    sendMessage(String(7) + "," + response);
+  }
+}
+
+...
+...
+```
+
+Hence, in the `generatingCommand()` function inside our client `space_invaders_controller.py`, if `m0` is `2` (the player is firing), the server `spaceinvaders.py` will receive either one of these messages, `FIRE`, `LFIRE`, `RFIRE`.  
+
+```python
+def generatingCommand(self, xf_input, yf_input, zf_input, is_fire):
+  # thresholding settings
+  ...
+  ...
+  ...
+
+  if (is_fire == 2):
+    # shooting but not moving
+    command = "FIRE"
+
+  if (self.is_between(x_cmd[-1], 1950, 1970) == False):
+    if (x_cmd[-1] <= adjusted_thresLeft and x_cmd[-1] > 1950 and z_cmd[-1] > adjusted_thresZ):
+      # tilt left
+      if (is_fire == 2):
+        command = "LFIRE"
+      else:
+        command = "LEFT"
+    if (x_cmd[-1] >= adjusted_thresRight and x_cmd[-1] < 1950 and z_cmd[-1] > adjusted_thresZ):
+      # tilt right
+      if (is_fire == 2):
+        command = "RFIRE"
+      else:
+        command = "RIGHT"
+
+  return command, x_cmd[-1], z_cmd[-1]
+```
+
+> __Features:__  
+
+<ins>1. Displaying score on the OLED</ins>  
+<!--NOTE: Start here justin-->
+
+
+<ins>2. Buzzing the motor when getting hit</ins>  
+<!--NOTE: Start here justin-->
+
+
+<ins>3. Integrating game statistics</ins>  
+<!--NOTE: Start here justin-->
+
 
 Demo GC1 :clapper:
 ------------------
