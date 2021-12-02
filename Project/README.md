@@ -1,34 +1,58 @@
-# ECE16 Lab x Report :writing_hand:
-## Prepared by: Muhammad Fadli Alim Arsani
-## Student ID: A16468481
-## Date: xx/xx/2021
+# Final Project :trollface: | 12/07/2021 :writing_hand:
+##### Prepared by:  
+> Muhammad Fadli Alim Arsani | A16468481  
+> Justin Volheim | A16582348  
 
-### Lab x Objective :pushpin:
+</br>  
 
-### Tutorials :memo:
+Table of contents
+=================
+* [Final Project Objective](#final-project-objective)
+* [Python Sockets Tutorial](#python-sockets-tutorial)
+* [Grand Challenge 1](#grand-challenge-1)
+  * [Objectives](#grand-challenge-1-objectives)
+  * [Features & Improvements](#features-&-improvements)
+  * [Implementations](#implementations)
+  * [Demo](#demo)
+* [Grand Challenge 2](#grand-challenge-2)
+  * [Objectives](#grand-challenge-2-objectives)
+  * [Features & Improvements](#features-&-improvements)
+  * [Implementations](#implementations)
+  * [Demo](#demo)
 
-<ins>__Tutorial x: blablabla__</ins>
-<!--- A brief description of what you understand/learned from the tutorial -->  
+</br>  
 
-<ins>__Tutorial x: blablabla__</ins>  
-<!--- A brief description of what you understand/learned from the tutorial -->  
+Final Project Objective
+=======================
 
-### Challenges :desktop_computer:
+</br>  
 
-<ins>__Challenge x: blablabla:__</ins>  
+Python Sockets Tutorial
+=======================
 
-<!--- your comments on what the challenge asks you to do -->  
+</br>  
 
-<!--- tip: write in concise readable paragraphs -->  
+Grand Challenge 1
+=======================
+Objectives
+----------
+Features & Improvements
+-----------------------
+Implementations
+---------------
+Demo
+----
 
-<!--- insert some images here, if any. -->  
+</br>  
 
-<ins>__Challenge x: blablabla:__</ins>  
-
-<!--- your comments on what the challenge asks you to do -->  
-
-<!--- tip: write in concise readable paragraphs -->  
-
-<!--- insert some images here, if any. -->  
-
+Grand Challenge 2
+=======================
+Objectives
+----------
+Features & Improvements
+-----------------------
+Implementations
+---------------
+Demo
+----
 
