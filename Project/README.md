@@ -364,6 +364,6 @@ Demo GC2 :clapper:
 
 </br>  
 
-Teammates Roles :boy: :man::call_me_hand: :
-===========================================
+Teammates Roles :boy: :man: :
+=============================
 
