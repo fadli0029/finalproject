@@ -107,25 +107,6 @@ void loop() {
   else if(command != "") {
     writeDisplayCSV(command,1);
   }
-
-<<<<<<< HEAD
-//   if(resetState){
-//     resetState = false;
-//     sending = false;
-//     x=0;
-//     y=0;
-//     while(1){
-//       currentState1 = !digitalRead(buttonPin1);
-//       if (currentState1 != lastButtonState1) {
-//         if (currentState1) {
-//           sendMessage("Reset");
-//           break;
-//         }
-//       }
-//       lastButtonState1 = currentState1;
-//     }
-//   }
-=======
   if(resetState){
     resetState = false;
     sending = false;
@@ -143,11 +124,6 @@ void loop() {
       lastButtonState1 = currentState1;
     }
   }
-
-
-
-
->>>>>>> 660c10c93315c5425b14667b47993c09c9536d61
   if (sending && sampleSensors()) {
     String response = String(sampleTime) + ",";
     response += String(ax) + "," + String(ay) + "," + String(az);

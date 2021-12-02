@@ -91,14 +91,12 @@ class PygameController:
                
                 except ValueError:  # if corrupted data, skip the sample
                     continue
-<<<<<<< HEAD
 
             # if (message != None) and (message == "Reset\r\n"):   #reset
             #     mySocket.send(("R").encode("UTF-8"))
             #     GameOver = False
             #     holdreset = True
 
-=======
             if (message != None) and (message == "Reset\r\n"):   #reset
                 mySocket.send(("R").encode("UTF-8"))
                 GameOver = False
@@ -108,7 +106,6 @@ class PygameController:
                     a = mySocket.recv(1024)
                 except BlockingIOError:
                     pass  # do nothing if there's no data
->>>>>>> 660c10c93315c5425b14667b47993c09c9536d61
 
             f_command = None
             if (isClicked):
