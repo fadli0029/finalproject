@@ -5,7 +5,7 @@
 /*
  * Precompiler directive elegance: 0 == Serial, 1 == Bluetooth
  */
-#define USE_BT 0
+#define USE_BT 1
 
 /*
  * This block allows us to use "Ser" throughout our codebase.
@@ -25,7 +25,7 @@
  */
 void setupCommunication() {
   #if USE_BT
-    Ser.begin("BTDemo"); // any unique name for BT identification
+    Ser.begin("BTDemoMine"); // any unique name for BT identification
   #else
     Ser.begin(115200);
   #endif

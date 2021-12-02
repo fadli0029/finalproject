@@ -167,8 +167,9 @@ if __name__== "__main__":
   the_refresh_time = 0.01             # update the processing every 0.01s 
   sensitivity = 2
 
-  #serial_name = "/dev/cu.esp32Spark-ESP32SPP"
-  serial_name = "/dev/ttyUSB0"
+  serial_name = "/dev/cu.esp32Spark-ESP32SPP"
+  #serial_name = "/dev/ttyUSB0"
+  #serial_name = "/dev/cu.BTDemoMine-ESP32SPP"  # [JUSTIN]
   baud_rate = 115200
   controller = PygameController(serial_name, baud_rate, the_num_samples, the_refresh_time, sensitivity)
 

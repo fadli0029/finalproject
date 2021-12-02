@@ -160,6 +160,7 @@ class PygameController:
 if __name__ == "__main__":
 
     serial_name = "/dev/cu.esp32Spark-ESP32SPP"    # [JUSTIN]
+    #serial_name = "/dev/cu.BTDemoMine-ESP32SPP"  # [JUSTIN]
     #serial_name = "/dev/ttyUSB0"                     # [FADE]
     baud_rate = 115200
     controller = PygameController(serial_name, baud_rate)
