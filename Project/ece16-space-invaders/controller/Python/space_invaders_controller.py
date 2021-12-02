@@ -49,7 +49,7 @@ class PygameController:
   def moving_average(self, x, win):
     ma = np.zeros(100)
     for i in np.arange(0,len(x)):
-      if(i < win): # use mean until filter is "on"
+      if(i < win):
         ma[i] = np.mean(x[:i+1])
       else:
         ma[i] = ma[i-1] + (x[i] - x[i-win])/win
