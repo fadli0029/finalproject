@@ -14,11 +14,6 @@ const int Z_PIN = A4;
  * NOTE: Customize this for your accelerometer sensor!
  */
 
-// DEFAULT - Ramsin's: 
-//const int X_ZERO = 1850;
-//const int Y_ZERO = 1850;
-//const int Z_ZERO = 1950;
-
 // CUSTOMIZED - Fade's:
 // NOTE: Better sensitivity imo, 
 // experiment for yourself :) .

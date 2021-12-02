@@ -61,6 +61,7 @@ class Ship(sprite.Sprite):
             self.rect.x += self.speed
         game.screen.blit(self.image, self.rect)
 
+    ''' ============================================================ '''
     def update_udp_socket(self, direction):
         if direction == "LEFT" and self.rect.x > 10:
             self.rect.x -= self.speed
@@ -77,6 +78,7 @@ class Ship(sprite.Sprite):
         # end of additions ...
 
         game.screen.blit(self.image, self.rect)
+    ''' ============================================================ '''
 
 
 class Bullet(sprite.Sprite):
@@ -486,7 +488,7 @@ class SpaceInvaders(object):
             msg, addr = mySocket.recvfrom(1024) # receive 1024 bytes
             msg = msg.decode('utf-8')
             print("Command: " + msg)
-            print("addr: " + str(addr))
+            # print("addr: " + str(addr))
             address = addr
             if msg == "QUIT":
                 sys.exit()

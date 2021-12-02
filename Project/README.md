@@ -11,7 +11,7 @@ Table of contents :bookmark_tabs:
 * [Python Sockets Tutorial](#python-sockets-tutorial) 
 * [Grand Challenge 1](#grand-challenge-1) 
   * [Objectives](#objectives-gc1) 
-  * [Features & Improvements](#features-and-improvements-gc1) 
+  * [Improvements & Features](#features-and-improvements-gc1) 
   * [Implementations](#implementations-gc1) 
   * [Demo](#demo-gc1) 
 * [Grand Challenge 2](#grand-challenge-2) 
@@ -19,6 +19,7 @@ Table of contents :bookmark_tabs:
   * [Features](#features)
   * [Implementations](#implementations-gc2) 
   * [Demo](#demo-gc2) 
+* Teammates Roles
 
 </br>  
 
@@ -98,7 +99,124 @@ adjusted_thresZ = 2200-adj_z
 ```
 
 <ins>2. Decoupling moving and firing</ins>  
+This is achieved by __sending 4 different direction__ messages to `spaceinvaders.py` via socket. The following are the 4 different messages:  
+- `"LFIRE"` 
+  - Indicates that the player is moving __left__ (tilting left) whilst pressing the button to __fire__.
+- `"LEFT"` 
+  - Indicates that the player is moving __left__ only, __without firing__.
+- `"RFIRE"` 
+  - Indicates that the player is moving __right__ (tilting right) whilst pressing the button to __fire__.
+- `"RIGHT"` 
+  - Indicates that the player is moving __right__ only, __without firing__.
 
+The server, `spaceinvaders.py` will receive one of these messages from its client `space_invaders_controller.py`.   
+In `space_invaders_controller.py`, we implemented two functions as helpers in generating those messages:  
+
+```python
+def is_between(self, target, x, y):
+  return (target >= x and target <= y)
+
+def generatingCommand(self, xf_input, yf_input, zf_input, is_fire):
+  adj_xLeft = 0
+  adj_xRight = 0
+  adj_z = 0
+  if (self.the_sensitivity == 2):
+    adj_xLeft = 500
+    adj_xRight = 140
+    adj_z = 230
+
+  adjusted_thresLeft = 2300+adj_xLeft
+  adjusted_thresRight = 1655-adj_xRight
+  adjusted_thresZ = 2200-adj_z
+
+  command = None
+
+  x_cmd = np.array(xf_input)
+  y_cmd = np.array(yf_input)
+  z_cmd = np.array(zf_input)
+
+  if (is_fire == 2):
+    # shooting but not moving
+    command = "FIRE"
+
+  # previous upper bound: 1956
+  if (self.is_between(x_cmd[-1], 1950, 1970) == False):
+    # tilting
+    # az can drop to lowest to 2.2k, regardless tilted left or right
+    # ax can go up to 2300 when tilt left and as low as 1655 when tilt right
+    if (x_cmd[-1] <= adjusted_thresLeft and x_cmd[-1] > 1950 and z_cmd[-1] > adjusted_thresZ):
+      # tilt left
+      if (is_fire == 2):
+        command = "LFIRE"
+      else:
+        command = "LEFT"
+    if (x_cmd[-1] >= adjusted_thresRight and x_cmd[-1] < 1950 and z_cmd[-1] > adjusted_thresZ):
+      # tilt right
+      if (is_fire == 2):
+        command = "RFIRE"
+      else:
+        command = "RIGHT"
+
+  return command, x_cmd[-1], z_cmd[-1]
+```
+Then, in `run()`, we did the regular implementations of receiving accelerometer data from the MCU, process it via DSP, and etc, as previously learned from the lab assignments. See [here]) for the full source code.  
+
+On the `space_invaders_controller.py` side, we added the following lines after the block `if msg == "FIRE"`:  
+
+```python
+...
+...
+elif msg == "LFIRE" or msg == "RFIRE":
+    if len(self.bullets) == 0 and self.shipAlive:
+        if self.score < 1000:
+            bullet = Bullet(self.player.rect.x + 23,
+                            self.player.rect.y + 5, -1,
+                            15, 'laser', 'center')
+            self.bullets.add(bullet)
+            self.allSprites.add(self.bullets)
+            self.sounds['shoot'].play()
+            # added - Fade
+            self.player.update_udp_socket(msg)
+            # ...
+        else:
+            leftbullet = Bullet(self.player.rect.x + 8,
+                                self.player.rect.y + 5, -1,
+                                15, 'laser', 'left')
+            rightbullet = Bullet(self.player.rect.x + 38,
+                                    self.player.rect.y + 5, -1,
+                                    15, 'laser', 'right')
+            self.bullets.add(leftbullet)
+            self.bullets.add(rightbullet)
+            self.allSprites.add(self.bullets)
+            self.sounds['shoot2'].play()
+            # added - Fade
+            self.player.update_udp_socket(msg)
+            # end of additions ...
+else:
+    self.player.update_udp_socket(msg)
+...
+...
+```
+And then added the following lines in the `update_udp_socket()` method:  
+
+```python
+def update_udp_socket(self, direction):
+    if direction == "LEFT" and self.rect.x > 10:
+        self.rect.x -= self.speed
+    if direction == "RIGHT" and self.rect.x < 740:
+        self.rect.x += self.speed
+    # added - Fade
+    if direction == "LFIRE" and self.rect.x > 10:
+        self.rect.x -= self.speed
+    # end of additions ...
+
+    # added - Fade
+    if direction == "RFIRE" and self.rect.x < 740:
+        self.rect.x += self.speed
+    # end of additions ...
+
+    game.screen.blit(self.image, self.rect)
+```
 
 Demo GC1 :clapper:
 ------------------

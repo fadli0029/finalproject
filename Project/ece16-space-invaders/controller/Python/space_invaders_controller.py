@@ -161,7 +161,6 @@ class PygameController:
             data = mySocket.recv(1024)
             data = data.decode("utf-8")
             controller.comms.send_message(data)
-            #print("Response: " + data)
         except BlockingIOError:
             pass  # do nothing if there's no data
 
