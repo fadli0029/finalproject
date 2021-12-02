@@ -7,18 +7,18 @@
 
 Table of contents :bookmark_tabs:
 =================================
-* [Final Project Objective](#final-project-objective) 
-* [Python Sockets Tutorial](#python-sockets-tutorial) 
-* [Grand Challenge 1](#grand-challenge-1) 
-  * [Objectives](#objectives-gc1) 
-  * [Improvements & Features](#features-and-improvements-gc1) 
-  * [Implementations](#implementations-gc1) 
-  * [Demo](#demo-gc1) 
-* [Grand Challenge 2](#grand-challenge-2) 
-  * [Objectives](#objectives-gc2) 
-  * [Features](#features)
-  * [Implementations](#implementations-gc2) 
-  * [Demo](#demo-gc2) 
+* [Final Project Objective](#final-project-objective-mag)
+* [Python Sockets Tutorial](#python-sockets-tutorial-memo)
+* [Grand Challenge 1](#grand-challenge-1-trophy)
+  * [Objectives](#objectives-gc1-bulb)
+  * [Improvements & Features](#improvements-and-features-gc1-hammer_and_wrench)
+  * [Implementations](#implementations-gc1-computer)
+  * [Demo](#demo-gc1-clapper)
+* [Grand Challenge 2](#grand-challenge-2-trophy)
+  * [Objectives](#objectives-gc2-bulb)
+  * [Features](#features-star2)
+  * [Implementations](#implementations-gc2-computer)
+  * [Demo](#demo-gc2-clapper)
 * Teammates Roles
 
 </br>  
@@ -361,4 +361,9 @@ Implementations GC2 :computer:
 
 Demo GC2 :clapper:
 ------------------
+
+</br>  
+
+Teammates Roles :boy: :man: :
+=============================
 
