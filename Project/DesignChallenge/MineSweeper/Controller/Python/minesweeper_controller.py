@@ -37,6 +37,7 @@ class PygameController:
         input("Ready to start? Hit enter to begin.\n")
 
         self.comms.send_message("start")
+        self.comms.clear()
         self.ped.threshSetter(100, 850)   # to set the threshold for DSP
 
         # 3. Forever collect orientation and send to PyGame until user exits
@@ -57,28 +58,27 @@ class PygameController:
                 
             message = self.comms.receive_message()
             if (message != None):
-                print(message) # receives x and y coord entered by user
-                f_command = None
+                print("Waiting for User to enter coordinates...") # receives x and y coord entered by user
                 try:
                     (x, y) = message.split(',')
                     jj_n = abs(prev_x - int(x)) + abs(prev_y - int(y))
                     # [where 'jj_n' is the number of jumping jacks needed]
-                    print("jj_n: " + str(jj_n))
+                    print("Jumping Jacks required: " + str(jj_n))
                     prev_x = int(x)
                     prev_y = int(y)
                     sendChoose = True
                     isClicked = True
-                
+               
                 except ValueError:  # if corrupted data, skip the sample
-                    print("coordinates receiving ERROR!")
                     continue
 
-            self.comms.clear()
+            f_command = None
             if (isClicked):
                 validate = True # ask for jumping jacks
-                track_jumps = 0
+                self.ped.resetVal() # reset jumping jacks value
                 prev_time = 0
                 print("Counting your jumping jacks...")
+                self.comms.clear()
                 controller.comms.send_message("jj")
                 while (validate):
                     msg = self.comms.receive_message()
@@ -86,7 +86,6 @@ class PygameController:
                         try:
                             (m1, m2, m3, m4) = msg.split(',')
                         except ValueError:
-                            print("Jumping Jacks count ERROR!")
                             continue
 
                         # add the new values to the circular lists
@@ -95,27 +94,27 @@ class PygameController:
                         current_time = time()
                         if (current_time - prev_time > self.ref_t):
                             prev_time = current_time
-                            jumps, peaks, filtered = self.ped.process()
-                            track_jumps = jumps
-                            print("Jumping Jacks: "+str(track_jumps))
+                            track_jumps, peaks, filtered = self.ped.process()
+                            print("You did " + str(track_jumps) + " Jumping Jacks!")
 
                             if (track_jumps == jj_n):
                                 validate = False
 
-                print("jumping jacks VALIDATED!")
-                print("sending coordinates to server!")
+                print("Jumping Jacks VALIDATED!")
+                print("sending coordinates to server...")
                             
                 f_command = "click" + "," + str(x) + "," + str(y)
 
             if f_command is not None:
-                print(f_command)
                 mySocket.send(f_command.encode("UTF-8"))
+
+            isClicked = False # reset isClicked status to False
 
 
 if __name__ == "__main__":
 
-    #serial_name = "/dev/cu.esp32Spark-ESP32SPP"    # [JUSTIN]
-    serial_name = "/dev/ttyUSB0"                    # [FADE]
+    # serial_name = "/dev/cu.esp32Spark-ESP32SPP"    # [JUSTIN]
+    serial_name = "/dev/ttyUSB0"                     # [FADE]
     baud_rate = 115200
     controller = PygameController(serial_name, baud_rate)
 

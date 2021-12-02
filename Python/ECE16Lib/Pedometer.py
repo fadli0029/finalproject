@@ -69,6 +69,9 @@ class Pedometer:
     # Return the step count, peak locations, and filtered data
     return self.__steps, peaks, np.array(self.__filtered)
 
+  def resetVal(self):
+    self.__steps = 0
+
   """
   Process the new data to update step count
   """

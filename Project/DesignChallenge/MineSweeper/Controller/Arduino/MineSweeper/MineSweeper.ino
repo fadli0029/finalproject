@@ -34,17 +34,16 @@ void loop() {
 
   String command = receiveMessage();
   if(command == "stop") {
-    sending = false;
     writeDisplay("Controller: Off", 0, true);
   }
 
   else if(command == "start") {
-    sending = false;
     writeDisplay("Controller: On", 0, true);
   }
 
 
   else if(command == "choose") {
+    sending = false;  // added [Fade]
       
     while(1) {
       writeDisplay("Select Tile!", 0, true);

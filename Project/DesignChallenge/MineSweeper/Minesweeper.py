@@ -218,10 +218,9 @@ def gameLoop():
         msg, addr = check_input_udp_socket()
         clickstat = None
         if msg is not None:
-            print("Command: " + str(msg))
             try:
                 (clickstat, x, y) = msg.split(',')
-
+                print("You selected tile at " + str(x) + ", " + str(y))
                 x_shifted = int(x) * 31 + 34  # conversion equations
                 y_shifted = int(y) * 33 + 116
 

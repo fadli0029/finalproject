@@ -66,7 +66,6 @@ class Ship(sprite.Sprite):
             self.rect.x -= self.speed
         if direction == "RIGHT" and self.rect.x < 740:
             self.rect.x += self.speed
-
         # added - Fade
         if direction == "LFIRE" and self.rect.x > 10:
             self.rect.x -= self.speed
@@ -481,7 +480,7 @@ class SpaceInvaders(object):
 
     ''' ============================================================ '''
     def check_input_udp_socket(self):
-        #mark
+        # mark
         global address
         try:
             msg, addr = mySocket.recvfrom(1024) # receive 1024 bytes

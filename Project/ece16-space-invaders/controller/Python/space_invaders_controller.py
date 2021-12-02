@@ -88,10 +88,8 @@ class PygameController:
     # previous upper bound: 1956
     if (self.is_between(x_cmd[-1], 1950, 1970) == False):
       # tilting
-      # az can drop to lowest to 2.2k, regardless tilted
-      # left or right
-      # ax can go up to 2300 when tilt left
-      # and as low as 1655 when tilt right
+      # az can drop to lowest to 2.2k, regardless tilted left or right
+      # ax can go up to 2300 when tilt left and as low as 1655 when tilt right
       if (x_cmd[-1] <= adjusted_thresLeft and x_cmd[-1] > 1956 and z_cmd[-1] > adjusted_thresZ):
         # tilt left
         if (is_fire == 2):
