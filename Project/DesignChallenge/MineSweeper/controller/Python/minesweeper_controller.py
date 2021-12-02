@@ -70,8 +70,6 @@ class PygameController:
 
             if sendChoose and not GameOver:
                 controller.comms.send_message("choose")
-                holdreset = False
-
                 sendChoose = False
 
                 
@@ -93,12 +91,24 @@ class PygameController:
                
                 except ValueError:  # if corrupted data, skip the sample
                     continue
+<<<<<<< HEAD
 
             # if (message != None) and (message == "Reset\r\n"):   #reset
             #     mySocket.send(("R").encode("UTF-8"))
             #     GameOver = False
             #     holdreset = True
 
+=======
+            if (message != None) and (message == "Reset\r\n"):   #reset
+                mySocket.send(("R").encode("UTF-8"))
+                GameOver = False
+                holdreset = True
+                sleep(0.5)
+                try:
+                    a = mySocket.recv(1024)
+                except BlockingIOError:
+                    pass  # do nothing if there's no data
+>>>>>>> 660c10c93315c5425b14667b47993c09c9536d61
 
             f_command = None
             if (isClicked):
@@ -136,6 +146,11 @@ class PygameController:
 
             if f_command is not None:
                 mySocket.send(f_command.encode("UTF-8"))
+                sleep(0.5)
+                try:
+                    a = mySocket.recv(1024)
+                except BlockingIOError:
+                    pass  # do nothing if there's no data
 
             isClicked = False # reset isClicked status to False
 
