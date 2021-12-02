@@ -104,22 +104,23 @@ void loop() {
     writeDisplayCSV(command,1);
   }
 
-//   if(resetState){
-//     resetState = false;
-//     sending = false;
-//     x=0;
-//     y=0;
-//     while(1){
-//       currentState1 = !digitalRead(buttonPin1);
-//       if (currentState1 != lastButtonState1) {
-//         if (currentState1) {
-//           sendMessage("Reset");
-//           break;
-//         }
-//       }
-//       lastButtonState1 = currentState1;
-//     }
-//   }
+  if(resetState){
+    resetState = false;
+    sending = false;
+    x=0;
+    y=0;
+    delay(500);
+    while(1){
+      currentState1 = !digitalRead(buttonPin1);
+      if (currentState1 != lastButtonState1) {
+        if (currentState1) {
+          sendMessage("Reset");
+          break;
+        }
+      }
+      lastButtonState1 = currentState1;
+    }
+  }
 
 
 
