@@ -365,9 +365,9 @@ For this Design Challenge, we choose to make a __game controller__ for the famou
 
 Descriptions & Discussions :bulb:
 ---------------------------------
-The idea of this design challenge is to build a fun light work-out environment for people who like staying at home, especially during the pandemic (though it's almost over, is it? :thinking:) By *"forcing"* the player to do a certain number of jumping jacks to be granted the tile of his/her choosing, he/she for sure sweat!  
+The idea of this design challenge is to build a fun light work-out environment for people who like staying at home, especially during the pandemic (though it's almost over, is it? :thinking:). By *"forcing"* the player to do a certain number of jumping jacks to be granted the tile of his/her choosing, he/she for sure sweat!  
 
-In terms of how is this project relevant to ECE16, we believe it encompasses everything that has been taught in this class, from as basic as good __Object-Oriented Programming__ implementation, to __Digital Signal Processing__, concepts of __Finite State Machines__ in deriving a solution effectively and efficiently, and etc.  
+In terms of how is this project relevant to ECE16, we believe it encompasses everything that was taught in this class, from as basic as good __Object-Oriented Programming__ implementation, to __Digital Signal Processing__, concepts of __Finite State Machines__ in deriving a solution effectively and efficiently, and etc.  
 
 TLDR:  
 > Our goal is to make this old game enjoyable again, and promotes healthy lifetyle, especially during this pandemic LOL. It looks simple, but it's tiring :cold_sweat: !
@@ -376,15 +376,15 @@ Features :star2:
 ----------------
 __Features:__  
 1. Players can __select tiles, restart game, by pressing the button on the MCU__, eliminating the need to interact with the keyboard/mouse.
-  - We want to give a 'workout-like' experience to the user; think of the controller like a skipping rope handle. While working out, in this case doing the jumping jacks, we wouldn't want the user to go back and forth interacting with the keyboard/mouse. Thus, we made everything is at a touch of a button.
+   - We want to give a 'workout-like' experience to the user; think of the controller like a skipping rope handle. While working out, in this case doing the jumping jacks, we wouldn't want the user to go back and forth interacting with the keyboard/mouse. Thus, we made everything is at a touch of a button.
 2. Accurate jumping jacks counter, achieved via __Digital Signal Processing__.
-  - We implemented __moving average__ on the __*l1-norm*__ of the three axes coming in from the accelerometer sensors. Doing this __eliminate the noise__, and make it __more reliable__.
-  - Then using the `find_peaks()` method from the `scipy.signal` module, we calculated the peaks that indicates a valid jumping jack.
-  - All of this is made even simpler thanks to our `ECE16Lib` which we built upon finishing series of labs in this class!
+   - We implemented __moving average__ on the __*l1-norm*__ of the three axes coming in from the accelerometer sensors. Doing this __eliminate the noise__, and make it __more reliable__.
+   - Then using the `find_peaks()` method from the `scipy.signal` module, we calculated the peaks that indicates a valid jumping jack.
+   - All of this is made even simpler thanks to our `ECE16Lib` which we built upon finishing series of labs in this class!
 3. Creates a __fun and competitive work-out environment!__ (at least in our opinion :v:)
-  - User can play with friends, let's see who's the last person standing :joy: !
+   - User can play with friends, let's see who's the last person standing :joy: !
 4. __Game statistics__, displaying __jumping jack counts__ on the OLED display.
-  - As mention in point no. 1, the user can directly look at the OLED display to know how many more jumping jacks are needed to select the tile they choose.
+   - As mention in point no. 1, the user can directly look at the OLED display to know how many more jumping jacks are needed to select the tile they choose.
 
 Controller Instructions
 -----------------------
