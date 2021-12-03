@@ -49,7 +49,7 @@ __Improvements:__
 1. __Smoother tilting__ when moving left and right, smooth like butter :butter:.
    - When playing the game first time, we realize the tilting is not smooth, there's no way one can be a pro player at this :frowning_face:. So, we thought why not *"clean"* the data first? Fortunately, the previous labs have equipped us with this skill. Hence, we __implemented Digital Signal Processing__, utilizing the `ECE16Lib` module, to resolve this issue! (see implementation for details).
 2. __Decoupled moving and firing__, user can do both silmutaneously!
-   - In any shooting games, any player would want to be able to move while shooting; this is essential to not die early and quit-rage. So we decided to make this possible in the game. By sending the right command (see implementation for details), the server can interpret and respond when the player intend to both move and shoot.
+   - In any shooting games, any player would want to be able to move while shooting; this is essential to not die early and rage quit. So we decided to make this possible in the game. By sending the right command (see implementation for details), the server can interpret and respond when the player intend to both move and shoot.
 3. Player can ideally and effectively __fire via button__ instead of tilting the breadboard.
    - We found out that tilting the breadboard upwards/downwards to fire is very inefficient, kind of too much work at some point for such a simple task. So we came up with the idea of using the button as the trigger to fire, which is not only more efficient but very easy to use! Full-Auto? No problemo!  
 
