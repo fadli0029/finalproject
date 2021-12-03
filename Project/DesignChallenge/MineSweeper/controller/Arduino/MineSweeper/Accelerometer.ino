@@ -14,18 +14,12 @@ const int Z_PIN = A4;
  * NOTE: Customize this for your accelerometer sensor!
  */
 
-// DEFAULT - Ramsin's: 
-//const int X_ZERO = 1850;
-//const int Y_ZERO = 1850;
-//const int Z_ZERO = 1950;
-
 // CUSTOMIZED - Fade's:
 // NOTE: Better sensitivity imo, 
 // experiment for yourself :) .
 const int X_ZERO = 1970;
 const int Y_ZERO = 1900;
 const int Z_ZERO = 2350;
-
 
 /*
  * Configure the analog pins to be treated as inputs by the MCU

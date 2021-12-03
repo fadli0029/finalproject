@@ -16,14 +16,12 @@ print("UDP server listening on port {0}.\n".format(port))
 bg_color = (192, 192, 192)
 grid_color = (128, 128, 128)
 
-#game_width = 10    # Change this to increase size
-#game_height = 10   # Change this to increase size
 game_width = 7      # Change this to increase size
 game_height = 7     # Change this to increase size
-numMine = 1    # Number of mines
-grid_size = 32  # Size of grid (WARNING: macke sure to change the images dimension as well)
-border = 16     # Top border
-top_border = 100  # Left, Right, Bottom border
+numMine = 1         # Number of mines
+grid_size = 32      # Size of grid (WARNING: macke sure to change the images dimension as well)
+border = 16         # Top border
+top_border = 100    # Left, Right, Bottom border
 display_width = grid_size * game_width + border * 2  # Display width
 display_height = grid_size * game_height + border + top_border  # Display height
 gameDisplay = pygame.display.set_mode((display_width, display_height))  # Create display
@@ -140,7 +138,7 @@ class Grid:
                                 self.val += 1
 
 ''' ============================================================ '''
-# added here [Fade] 
+# this functions checks incoming message from client
 def check_input_udp_socket():
     msg = None
     addr = 0
@@ -150,16 +148,15 @@ def check_input_udp_socket():
     except BlockingIOError:
         pass # do nothing if there's no data
     return msg, addr
-# additions ended here
 ''' ============================================================ '''
 
 def gameLoop():
-    gameState = "Playing"  # Game state
-    mineLeft = numMine  # Number of mine left
-    global grid  # Access global var
+    gameState = "Playing"   # Game state
+    mineLeft = numMine      # Number of mine left
+    global grid             # Access global var
     grid = []
     global mines
-    t = 0  # Set time to 0
+    t = 0                   # Set time to 0
 
     # Generating mines
     mines = [[random.randrange(0, game_width),
@@ -199,7 +196,7 @@ def gameLoop():
         gameDisplay.fill(bg_color)
 
         ''' ============================================================ '''
-        # added here [Fade][justin]
+        # check if player pressed button to reset game and play again
         msg, addr = check_input_udp_socket()
         clickstat = None
         if msg is not None:
@@ -208,16 +205,18 @@ def gameLoop():
                 gameLoop()
                 break;
 
-
             try:
                 address = addr
-                (clickstat, x, y) = msg.split(',')
+                (clickstat, x, y) = msg.split(',') 
+                # receives coordinate from client as specified by player
                 print("You selected tile at " + str(x) + ", " + str(y))
-                x_shifted = int(x) * 31 + 34  # conversion equations
+                # conversion equations (explained in detail in README.md)
+                x_shifted = int(x) * 31 + 34 
                 y_shifted = int(y) * 33 + 116
 
             except ValueError:  # if corrupted data, skip the sample
                 continue
+        ''' ============================================================ '''
 
 
         # User inputs
@@ -228,22 +227,17 @@ def gameLoop():
             # Check if player restart the game
             if gameState == "Game Over" or gameState == "Win":
                 if event.type == pygame.KEYDOWN:
-                    # check if there's a key physically pressed down [commented: Fade]
                     if event.key == pygame.K_r:
-                        # check if that key is the key 'r' [commented: Fade]
                         gameState = "Exit"
                         gameLoop()
-                        # if it is, exit this game by exiting this while loop
-                        # and make a recursion call by calling gameLoop()
-                        # [commented: Fade]
 
-
+        ''' ============================================================ '''
         if clickstat == "click":
             for i in grid:
                 for j in i:
-                    #coord = pygame.mouse.get_pos()
+                    # pass the coordinates to the collidepoint()
+                    # function
                     if j.rect.collidepoint((x_shifted,y_shifted)):
-                        #print("coordinate: " + str(coord))
                         j.revealGrid()
                         # Toggle flag off
                         if j.flag:
@@ -253,7 +247,6 @@ def gameLoop():
                         if j.val == -1:
                             gameState = "Game Over"
                             j.mineClicked = True
-        # additions ended here
         ''' ============================================================ '''
 
         # Check if won
@@ -263,16 +256,23 @@ def gameLoop():
                 j.drawGrid()
                 if j.val != -1 and not j.clicked:
                     w = False
+
+        ''' ============================================================ '''
         if w and gameState != "Exit":
             gameState = "Win"
-            mySocket.sendto(("Won").encode("utf-8"),address)  # sends Score and life notification to socket
+            # sends Score and life notification to socket
+            mySocket.sendto(("Won").encode("utf-8"),address)  
+        ''' ============================================================ '''
 
-        # Draw Texts
+
+        ''' ============================================================ '''
+        # checking game states
         if gameState != "Game Over" and gameState != "Win":
             t += 1
         elif gameState == "Game Over":
             drawText("Game Over!", 50)
-            mySocket.sendto(("Loss").encode("utf-8"),address)  # sends W/L to python code
+            # sends W/L to python code
+            mySocket.sendto(("Loss").encode("utf-8"),address) 
             drawText("R to restart", 35, 50)
             for i in grid:
                 for j in i:
@@ -281,6 +281,8 @@ def gameLoop():
         else:
             drawText("You WON!", 50)
             drawText("R to restart", 35, 50)
+        ''' ============================================================ '''
+
         # Draw time
         s = str(t // 15)
         screen_text = pygame.font.SysFont("Calibri", 50).render(s, True, (0, 0, 0))

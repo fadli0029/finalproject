@@ -8,6 +8,7 @@ int x = 0;
 int y = 0;
 bool sending, oldStatus1, oldStatus2, both;
 
+// for tracking button states
 int currentState1 = 0;
 int lastButtonState1;
 int currentState2 = 0;
@@ -43,8 +44,9 @@ void loop() {
   }
 
 
-  else if(command == "choose") {
-    sending = false;  // added [Fade]
+  else if(command == "choose") { 
+    // player is choosing coordinate
+    sending = false;
       
     while(1) {
       writeDisplay("Select Tile!", 0, true);
@@ -89,25 +91,30 @@ void loop() {
     }
   }
   else if(command =="jj") {
+    // ready to track jumping jacks
     sending = true;
     writeDisplay("",0,true);
 
   }
   else if(command == "Won")  {
+    // player won the game, ask if he wants to restart
     writeDisplay("You Won!!!      ",0,true);
     writeDisplay("Press R to reset",1,false);
     resetState = true;
   }
   else if(command == "Loss") {
+    // player lose the game, ask if he wants to restart
     writeDisplay("Game Over!      ",0,true);
     writeDisplay("Press R to reset",1,false);
     resetState = true;
 
   }
   else if(command != "") {
+    // display number of jumping jacks done
     writeDisplayCSV(command,1);
   }
   if(resetState){
+    // check if reset, send it to python
     resetState = false;
     sending = false;
     x=0;
@@ -125,6 +132,7 @@ void loop() {
     }
   }
   if (sending && sampleSensors()) {
+    // collect sensor data
     String response = String(sampleTime) + ",";
     response += String(ax) + "," + String(ay) + "," + String(az);
     sendMessage(response);
