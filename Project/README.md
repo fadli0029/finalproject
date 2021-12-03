@@ -39,11 +39,11 @@ Grand Challenge 1 :trophy:
 ==========================
 In this challenge, we are tasked to make a __game controller__ for the game called __Space Invader__ :space_invader:.
 
-Objectives GC1 :bulb:
+Objectives :bulb:
 ---------------------
 The objective of this challenge is to __encourage students to use the knowledge they learned throughout all 7 labs__, by making a __fully-functionaly game controller__, which not only __improves the game mechanics__, but also has some __extra features__! Students work in a team of 2 and try to come up with a series of improvements and feature to add to the game. This ultimately tests their understanding in the concepts taught in the previous labs.
 
-Discussions of Improvements & Features GC1 :hammer_and_wrench:
+Discussions of Improvements & Features :hammer_and_wrench:
 ----------------------------------------------------------------
 __Improvements:__  
 1. __Smoother tilting__ when moving left and right, smooth like butter :butter:.
