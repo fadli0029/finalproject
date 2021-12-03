@@ -12,11 +12,13 @@ Table of contents :bookmark_tabs:
 * [Grand Challenge 1](#grand-challenge-1-trophy)
   * [Objectives](#objectives-gc1-bulb)
   * [Improvements & Features](#improvements-and-features-gc1-hammer_and_wrench)
+  * [Controller Instructions](#dummy)
   * [Implementations](#implementations-gc1-computer)
   * [Demo](#demo-gc1-clapper)
 * [Grand Challenge 2](#grand-challenge-2-trophy)
-  * [Objectives](#objectives-gc2-bulb)
+  * Descriptions & [Discussions](#dummy)
   * [Features](#features-star2)
+  * [Controller Instructions](#dummy)
   * [Implementations](#implementations-gc2-computer)
   * [Demo](#demo-gc2-clapper)
 * [Teammates Roles](#teammates-roles-boy-man-)
@@ -35,22 +37,32 @@ Python Sockets Tutorial :memo:
 
 Grand Challenge 1 :trophy:
 ==========================
-Space Invader :space_invader:!
+In this challenge, we are tasked to make a __game controller__ for the game called __Space Invader__ :space_invader:.
 
 Objectives GC1 :bulb:
 ---------------------
+The objective of this challenge is to __encourage students to use the knowledge they learned throughout all 7 labs__, by making a __fully-functionaly game controller__, which not only __improves the game mechanics__, but also has some __extra features__! Students work in a team of 2 and try to come up with a series of improvements and feature to add to the game. This ultimately tests their understanding in the concepts taught in the previous labs.
 
 Improvements and Features GC1 :hammer_and_wrench:
 -------------------------------------------------
 __Improvements:__  
 1. __Smoother tilting__ when moving left and right, smooth like butter :butter:. This is achieved via __Digital Signal Processing__, utilizing `ECE16Lib` modules.
+  - (note: need to satisfy discussion of design choices here)
 2. __Decoupled moving and firing__, user can do both silmutaneously!
-3. Player can ideally and effectively __fire via button__ rather then tilting the breadboard.
+  - (note: need to satisfy discussion of design choices here)
+3. Player can ideally and effectively __fire via button__ instead of tilting the breadboard.
+  - (note: need to satisfy discussion of design choices here)
 
 __Features:__  
 1. Player can see their __score displayed on the OLED__.
+  - (note: need to satisfy discussion of design choices here)
 2. Making use of the __buzz motor__, player will feel __vibration on the controller__ when he/she gets hit by the space invaders! Don't worry, it ~~doesn't~~ hurts.
+  - (note: need to satisfy discussion of design choices here)
 3. __Game statistics__, such as __lives count__, __game over status__, and __score__, can be seen directly from the OLED
+  - (note: need to satisfy discussion of design choices here)
+
+Controller Instructions
+-----------------------
 
 Implementations GC1 :computer:
 ------------------------------
@@ -349,12 +361,19 @@ Demo GC1 :clapper:
 
 Grand Challenge 2 :trophy:
 ==========================
+For this Design Challenge, we choose to make a __game controller__ for the famous classic __Mine Sweeper__ game!
 
-Objectives GC2 :bulb:
+Descriptions & Discussions :bulb:
 ---------------------
+We decided this to be our final project because we believe it encompasses everything that has been taught in this class, from as basic as good __Object-Oriented Programming__ implementation, to __Digital Signal Processing__, concepts of __Finite State Machines__ in deriving a solution effectively and efficiently, and etc. Hence:  
+
+> Our goal is to make this old game enjoyable again, and promotes healthy lifetyle, especially during this pandemic LOL. It looks simple, but it's tiring :cold_sweat: !
 
 Features :star2:
 ----------------
+
+Controller Instructions
+-----------------------
 
 Implementations GC2 :computer:
 ------------------------------
