@@ -67,15 +67,12 @@ class Ship(sprite.Sprite):
             self.rect.x -= self.speed
         if direction == "RIGHT" and self.rect.x < 740:
             self.rect.x += self.speed
-        # added - Fade
-        if direction == "LFIRE" and self.rect.x > 10:
+        if direction == "LFIRE" and self.rect.x > 10: 
+            # both moving left and firing
             self.rect.x -= self.speed
-        # end of additions ...
-
-        # added - Fade
         if direction == "RFIRE" and self.rect.x < 740:
+            # both moving right and firing
             self.rect.x += self.speed
-        # end of additions ...
 
         game.screen.blit(self.image, self.rect)
     ''' ============================================================ '''
@@ -482,13 +479,11 @@ class SpaceInvaders(object):
 
     ''' ============================================================ '''
     def check_input_udp_socket(self):
-        # mark
         global address
         try:
             msg, addr = mySocket.recvfrom(1024) # receive 1024 bytes
             msg = msg.decode('utf-8')
             print("Command: " + msg)
-            # print("addr: " + str(addr))
             address = addr
             if msg == "QUIT":
                 sys.exit()
@@ -513,6 +508,9 @@ class SpaceInvaders(object):
                         self.allSprites.add(self.bullets)
                         self.sounds['shoot2'].play()
             elif msg == "LFIRE" or msg == "RFIRE":
+                # receives LFIRE or RFIRE from client,
+                # which means player is moving and
+                # shooting at the same time
                 if len(self.bullets) == 0 and self.shipAlive:
                     if self.score < 1000:
                         bullet = Bullet(self.player.rect.x + 23,
@@ -521,9 +519,8 @@ class SpaceInvaders(object):
                         self.bullets.add(bullet)
                         self.allSprites.add(self.bullets)
                         self.sounds['shoot'].play()
-                        # added - Fade
+                        # update directions
                         self.player.update_udp_socket(msg)
-                        # ...
                     else:
                         leftbullet = Bullet(self.player.rect.x + 8,
                                             self.player.rect.y + 5, -1,
@@ -535,9 +532,8 @@ class SpaceInvaders(object):
                         self.bullets.add(rightbullet)
                         self.allSprites.add(self.bullets)
                         self.sounds['shoot2'].play()
-                        # added - Fade
+                        # update directions
                         self.player.update_udp_socket(msg)
-                        # end of additions ...
             else:
                 self.player.update_udp_socket(msg)
         except BlockingIOError:
@@ -723,7 +719,7 @@ class SpaceInvaders(object):
                         self.livesGroup.update()
                         self.check_input()
                         ''' ============================================================ '''
-                        self.check_input_udp_socket()
+                        self.check_input_udp_socket() # check for input from client
                         ''' ============================================================ '''
                     if currentTime - self.gameTimer > 3000:
                         # Move enemies closer to bottom
@@ -742,7 +738,7 @@ class SpaceInvaders(object):
                     self.livesText.draw(self.screen)
                     self.check_input()
                     ''' ============================================================ '''
-                    self.check_input_udp_socket()
+                    self.check_input_udp_socket() # check for input from client
                     ''' ============================================================ '''
                     self.enemies.update(currentTime)
                     self.allSprites.update(self.keys, currentTime)
@@ -752,11 +748,14 @@ class SpaceInvaders(object):
                     self.make_enemies_shoot()
 
 
-                    #************************* sends data to oled only if a new value has occured
+                    ''' ============================================================ '''
+                    # sends data to oled only if a new value has occured
                     if self.score != self.lastscorecount or self.lastlifecount != self.livesLeft:
-                        mySocket.sendto(("Lives Left:" + str(self.livesLeft) + "    ," + "Score: " + str(self.score) + "   ").encode("utf-8"),address)  # sends Score and life notification to socket
+                        mySocket.sendto(("Lives Left:" + str(self.livesLeft) + "    ," + "Score: " + str(self.score) + "   ").encode("utf-8"),address)  
+                        # sends Score and life notification to socket
                         self.lastlifecount = self.livesLeft
                         self.lastscorecount = self.score
+                    ''' ============================================================ '''
 
             elif self.gameOver:
                 currentTime = time.get_ticks()

@@ -17,17 +17,17 @@ mySocket.setblocking(False)
 class PygameController:
   comms = None
 
-  num_samples = 0
-  refresh_time = 0
-  the_sensitivity = 0
+  num_samples = 0       # number of samples for DSP
+  refresh_time = 0      # update every x second, where x is refresh_time
+  the_sensitivity = 0   # 2 levels of sensitivity
 
-  times = None
-  ax = None
-  ay = None
-  az = None
-  ax_f = None
-  ay_f = None
-  az_f = None
+  times = None  # timestamps value
+  ax = None     # x-axis accelerometer value
+  ay = None     # y-axis accelerometer value
+  az = None     # z-axis accelerometer value
+  ax_f = None   # final x-axis accelerometer value after DSP
+  ay_f = None   # final x-axis accelerometer value after DSP
+  az_f = None   # final x-axis accelerometer value after DSP
 
   def __init__(self, serial_name, baud_rate, samplings_Num, refresh_rate, sens):
     self.the_sensitivity = sens
@@ -46,6 +46,7 @@ class PygameController:
     self.ay_f = CircularList([], self.num_samples)
     self.az_f = CircularList([], self.num_samples)
 
+  # apply moving average to x over a window of length, win
   def moving_average(self, x, win):
     ma = np.zeros(100)
     for i in np.arange(0,len(x)):
@@ -55,18 +56,22 @@ class PygameController:
         ma[i] = ma[i-1] + (x[i] - x[i-win])/win
     return ma
 
+  # returns a processed version of 'target' as 'out'
   def process(self, target, win):
     out = self.moving_average(target, win)
     return out
 
+  # returns true if target is between x and y, inclusive
   def is_between(self, target, x, y):
     return (target >= x and target <= y)
 
+  # generates command to be sent to server
   def generatingCommand(self, xf_input, yf_input, zf_input, is_fire):
     adj_xLeft = 0
     adj_xRight = 0
     adj_z = 0
     if (self.the_sensitivity == 2):
+      # adjust thresholds if sensitivity is level 2
       adj_xLeft = 500
       adj_xRight = 140
       adj_z = 230
@@ -85,20 +90,19 @@ class PygameController:
       # shooting but not moving
       command = "FIRE"
 
-    # previous upper bound: 1956
     if (self.is_between(x_cmd[-1], 1950, 1970) == False):
       # tilting
       # az can drop to lowest to 2.2k, regardless tilted left or right
       # ax can go up to 2300 when tilt left and as low as 1655 when tilt right
       if (x_cmd[-1] <= adjusted_thresLeft and x_cmd[-1] > 1950 and z_cmd[-1] > adjusted_thresZ):
         # tilt left
-        if (is_fire == 2):
+        if (is_fire == 2): # both tilt left and fire
           command = "LFIRE"
         else:
           command = "LEFT"
       if (x_cmd[-1] >= adjusted_thresRight and x_cmd[-1] < 1950 and z_cmd[-1] > adjusted_thresZ):
         # tilt right
-        if (is_fire == 2):
+        if (is_fire == 2): # both tilt right and fire
           command = "RFIRE"
         else:
           command = "RIGHT"
@@ -122,7 +126,6 @@ class PygameController:
       message = self.comms.receive_message()
 
       if(message != None):
-        #print(message)
         f_command = None
         try:
           (m0, m1, m2, m3, m4) = message.split(',')
@@ -135,11 +138,11 @@ class PygameController:
         self.ay.add(int(m3))
         self.az.add(int(m4))
 
-        # if enough time has elapsed, clear the axis, and plot az
         current_time = time()
         if (current_time - previous_time > self.refresh_time):
           previous_time = current_time
 
+          # process data
           az_process = self.process(self.az, 20)
           self.az_f.add(az_process.tolist())
 
@@ -149,10 +152,12 @@ class PygameController:
           ay_process = self.process(self.ay, 20)
           self.ay_f.add(ay_process.tolist())
 
+          # generate command, and send it to server
           f_command, valx, valz = self.generatingCommand(self.ax_f, self.ay_f, self.az_f, int(m0))
           if f_command is not None:
             mySocket.send(f_command.encode("UTF-8"))
 
+        # check if server is sending any commands
         try:
             data = mySocket.recv(1024)
             data = data.decode("utf-8")
@@ -163,9 +168,9 @@ class PygameController:
 
 if __name__== "__main__":
 
-  the_num_samples = 100               # 2 seconds of data @ 50Hz
-  the_refresh_time = 0.01             # update the processing every 0.01s 
-  sensitivity = 2
+  the_num_samples = 100     # 2 seconds of data @ 50Hz
+  the_refresh_time = 0.01   # update the processing every 0.01s 
+  sensitivity = 2           # sensitivity level
 
   serial_name = "/dev/ttyUSB0"                  # [FADE]
   #serial_name = "/dev/cu.esp32Spark-ESP32SPP"  # [JUSTIN]

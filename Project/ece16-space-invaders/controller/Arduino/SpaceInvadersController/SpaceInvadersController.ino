@@ -19,9 +19,9 @@ void setup() {
   setupDisplay();
   setupPhotoSensor();
   setupMotor();
-  sending = false;
+  sending = false;    // activate/deactivate receiving acclerometer value
   oldStatus = false;  // for button/buzzer
-  isShoot = false;
+  isShoot = false;    // to detect if button is pressed
 
   writeDisplay("Ready...", 1, true);
   writeDisplay("Set...", 2, false);
@@ -57,30 +57,33 @@ void loop() {
     sending = true;
     writeDisplay("Controller: On", 0, true);
   }
-  else if(command == "Dead"){
+  else if(command == "Dead") { // player loose :(
     sending = false;
     writeDisplay("You Died!!!", 0, true);
     vibrate = true;
     timer1 = currentMillis;
-    activateMotor(255);
+    activateMotor(255); // buzz motor
   }
-  else if(command == "Hit"){
+  else if(command == "Hit") { // player is hit by buller
     writeDisplay("You've been Hit!", 0, true);
     vibrate = true;
     timer1 = currentMillis;
-    activateMotor(255);
+    activateMotor(255); // buzz motor
   }
   else if (command != ""){
     writeDisplayCSV(command,1);
   }
   if(sending && sampleSensors()) {
+    // receives sensor values
     String response = String(sampleTime) + ",";
     response += String(ax) + "," + String(ay) + "," + String(az);
 
     if (isShoot) {
+      // player pressed button, he's firing!
       sendMessage(String(2) + "," + response);
     }
     else {
+      // player didn't pressed button, he's not firing
       sendMessage(String(7) + "," + response);
     }
   }
