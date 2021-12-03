@@ -11,12 +11,12 @@ Table of contents :bookmark_tabs:
 * [Python Sockets Tutorial](#python-sockets-tutorial-memo)
 * [Grand Challenge 1](#grand-challenge-1-trophy)
   * [Objectives](#objectives-gc1-bulb)
-  * [Improvements & Features](#improvements-and-features-gc1-hammer_and_wrench)
+  * [Discussions of Improvements & Features](#improvements-and-features-gc1-hammer_and_wrench)
   * [Controller Instructions](#dummy)
   * [Implementations](#implementations-gc1-computer)
   * [Demo](#demo-gc1-clapper)
 * [Grand Challenge 2](#grand-challenge-2-trophy)
-  * Descriptions & [Discussions](#dummy)
+  * [Descriptions & Discussions](#dummy)
   * [Features](#features-star2)
   * [Controller Instructions](#dummy)
   * [Implementations](#implementations-gc2-computer)
@@ -43,23 +43,23 @@ Objectives GC1 :bulb:
 ---------------------
 The objective of this challenge is to __encourage students to use the knowledge they learned throughout all 7 labs__, by making a __fully-functionaly game controller__, which not only __improves the game mechanics__, but also has some __extra features__! Students work in a team of 2 and try to come up with a series of improvements and feature to add to the game. This ultimately tests their understanding in the concepts taught in the previous labs.
 
-Improvements and Features GC1 :hammer_and_wrench:
--------------------------------------------------
+Discussions of Improvements & Features GC1 :hammer_and_wrench:
+----------------------------------------------------------------
 __Improvements:__  
-1. __Smoother tilting__ when moving left and right, smooth like butter :butter:. This is achieved via __Digital Signal Processing__, utilizing `ECE16Lib` modules.
-  - (note: need to satisfy discussion of design choices here)
+1. __Smoother tilting__ when moving left and right, smooth like butter :butter:.
+   - When playing the game first time, we realize the tilting is not smooth, there's no way one can be a pro player at this :frowning_face:. So, we thought why not *"clean"* the data first? Fortunately, the previous labs have equipped us with this skill. Hence, we __implemented Digital Signal Processing__, utilizing the `ECE16Lib` module, to resolve this issue! (see implementation for details).
 2. __Decoupled moving and firing__, user can do both silmutaneously!
-  - (note: need to satisfy discussion of design choices here)
+   - In any shooting games, any player would want to be able to move while shooting; this is essential to not die early and quit-rage. So we decided to make this possible in the game. By sending the right command (see implementation for details), the server can interpret and respond when the player intend to both move and shoot.
 3. Player can ideally and effectively __fire via button__ instead of tilting the breadboard.
-  - (note: need to satisfy discussion of design choices here)
+   - We found out that tilting the breadboard upwards/downwards to fire is very inefficient, kind of too much work at some point for such a simple task. So we came up with the idea of using the button as the trigger to fire, which is not only more efficient but very easy to use! Full-Auto? No problemo!  
 
 __Features:__  
 1. Player can see their __score displayed on the OLED__.
-  - (note: need to satisfy discussion of design choices here)
+   - (note: need to satisfy discussion of design choices here, see improvements above for example)
 2. Making use of the __buzz motor__, player will feel __vibration on the controller__ when he/she gets hit by the space invaders! Don't worry, it ~~doesn't~~ hurts.
-  - (note: need to satisfy discussion of design choices here)
+   - (note: need to satisfy discussion of design choices here, see improvements above for example)
 3. __Game statistics__, such as __lives count__, __game over status__, and __score__, can be seen directly from the OLED
-  - (note: need to satisfy discussion of design choices here)
+   - (note: need to satisfy discussion of design choices here, see improvements above for example)
 
 Controller Instructions
 -----------------------
@@ -380,9 +380,7 @@ __Features:__
    - We implemented __moving average__ on the __*l1-norm*__ of the three axes coming in from the accelerometer sensors. Doing this __eliminate the noise__, and make it __more reliable__.
    - Then using the `find_peaks()` method from the `scipy.signal` module, we calculated the peaks that indicates a valid jumping jack.
    - All of this is made even simpler thanks to our `ECE16Lib` which we built upon finishing series of labs in this class!
-3. Creates a __fun and competitive work-out environment!__ (at least in our opinion :v:)
-   - User can play with friends, let's see who's the last person standing :joy: !
-4. __Game statistics__, displaying __jumping jack counts__ on the OLED display.
+3. __Game statistics__, displaying __jumping jack counts__ on the OLED display.
    - As mention in point no. 1, the user can directly look at the OLED display to know how many more jumping jacks are needed to select the tile they choose.
 
 Controller Instructions
@@ -409,4 +407,8 @@ Implementations GC2 :computer:
 
 Teammates Roles :boy: :man: :
 =============================
+<ins>__Muhammad Fadli Alim Arsani :boy:__</ins>  
+
+<ins>__Justin Volheim :man:__</ins>  
+
 
