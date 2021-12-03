@@ -55,11 +55,14 @@ __Improvements:__
 
 __Features:__  
 1. Player can see their __score displayed on the OLED__.
-   - (note: need to satisfy discussion of design choices here, see improvements above for example)
+   - We noticed that during the game whenever we go vibrational feedback from the other features we had a tendency to look down at the controller.
+        due to this it seemed natural to add the current score to the controllers design. 
 2. Making use of the __buzz motor__, player will feel __vibration on the controller__ when he/she gets hit by the space invaders! Don't worry, it ~~doesn't~~ hurts.
-   - (note: need to satisfy discussion of design choices here, see improvements above for example)
-3. __Game statistics__, such as __lives count__, __game over status__, and __score__, can be seen directly from the OLED
-   - (note: need to satisfy discussion of design choices here, see improvements above for example)
+   - By adding vibrational feedback to the controller when the ship is hit the player will become more emerged in the gameplay and have a better overall experience. 
+        Further, making the controller a better option to use over the standard computer controls. 
+3. __Game statistics__, such as __lives count__, __game over status__,__additional vibrational feedback__ can be directly experienced from the controller
+   - When playing the game we noticed that there was no real benefit in experience of gamplay while using the controller over the computer controls besides the tilting improvement, so we wanted to add some uniqueness to the controller
+        which gives the player a fuller experience while playing the game.
 
 Controller Instructions
 -----------------------
@@ -345,16 +348,237 @@ def generatingCommand(self, xf_input, yf_input, zf_input, is_fire):
 
 > __Features:__  
 
-<ins>1. Displaying score on the OLED</ins>  
-<!--NOTE: Start here justin-->
+<ins>1. Displaying score and lives on the OLED</ins>  
 
+In order to display the score and life count on the esp32 code changes were required in spaceinvaders.py, space_invaders_controller.py and 
+SpaceInvadersController.ino. These changes can be seen as follows.
+
+
+This code is part of the spaceinvaders.py file that needed to be changed inorder to send the correct lives and score data to the esp32
+In the first section we can see the code in the main loop that Creates and sends a CSV message to the python controller code. 
+In the second section we can see the code that needed to be edited to keep track of the current number of lives
+```python
+    def main(self):
+        while True:
+            #other code 
+            ...
+            ...
+        
+            elif self.startGame:
+                if not self.enemies and not self.explosionsGroup:
+                    # other code
+                    ...
+                    ...
+                    ...
+                    
+        # sends data to oled only if a new value has occured
+                    if self.score != self.lastscorecount or self.lastlifecount != self.livesLeft:
+                        mySocket.sendto(("Lives Left:" + str(self.livesLeft) + "    ," + "Score: " + str(self.score) + "   ").encode("utf-8"),address)  
+                        # sends Score and life notification to socket
+                        self.lastlifecount = self.livesLeft
+                        self.lastscorecount = self.score
+
+
+# The edits in this code allow for tracking of number of lives left
+class SpaceInvaders(object):
+    #...other functions
+    #...
+    def check_collisions(self):
+            for player in sprite.groupcollide(self.playerGroup, self.enemyBullets,
+                                          True, True).keys():
+            #mark
+            if self.life3.alive():
+                self.livesLeft -= 1
+                self.life3.kill()
+            elif self.life2.alive():
+                self.livesLeft -= 1
+                self.life2.kill()
+            elif self.life1.alive():
+                self.livesLeft -= 1
+                self.life1.kill()
+            else:
+                self.gameOver = True
+                self.startGame = False
+           
+            #other Code
+            ...
+            ...    
+```
+This is the code added inside the main loop of the space_invaders_controller.py file that is reused for several features.
+It is designed to simply check for any messages coming from the Game and sends them to the 
+esp32.
+```python
+    # check if server is sending any commands
+        try:
+            data = mySocket.recv(1024)
+            data = data.decode("utf-8")
+            controller.comms.send_message(data)
+        except BlockingIOError:
+            pass  # do nothing if there's no data
+
+```
+
+
+This is a trimmed down version of the arduino code that shows the key code components that support updating the 
+score and number of lives on the oled screen. Basically if a CSV string is sent that doesn't match the other commands that string will be displayed
+on the oled screen.
+```cpp
+void loop(){
+ String command = receiveMessage();
+ 
+ // other commands
+ 
+ // prints CSV messages to oled
+ else if (command != ""){
+    writeDisplayCSV(command,1);
+  }
+ // Sample data code
+ // Firing Code
+ //Motor control Code
+  }
+```
 
 <ins>2. Buzzing the motor when getting hit</ins>  
-<!--NOTE: Start here justin-->
 
+Inorder to impliment the motor buzzing feature when hit by a bullet the following code addition/ammendments were required.
+
+This is the code from the spaceinvaders.py file. The change made was to check if the game had ended after being hit by a bullet and if not then
+send a Hit command to the esp32
+```python
+class SpaceInvaders(object):
+    #...other functions
+    #...
+    def check_collisions(self):
+        for player in sprite.groupcollide(self.playerGroup, self.enemyBullets,
+                                          True, True).keys():
+            # code for updating life count
+            #...
+            #...
+            if not self.gameOver:
+                ''' =========================================================================================== '''
+                mySocket.sendto("Hit".encode("utf-8"), address)   # sends hit notification to socket
+                ''' =========================================================================================== '''
+
+            self.sounds['shipexplosion'].play()
+            ShipExplosion(player, self.explosionsGroup)
+            self.makeNewShip = True
+            self.shipTimer = time.get_ticks()
+            self.shipAlive = False
+```
+This is the code added inside the main loop of the space_invaders_controller.py file that is reused for several features.
+It is designed to simply check for any messages coming from the Game and sends them to the 
+esp32.
+```python
+    # check if server is sending any commands
+        try:
+            data = mySocket.recv(1024)
+            data = data.decode("utf-8")
+            controller.comms.send_message(data)
+        except BlockingIOError:
+            pass  # do nothing if there's no data
+```
+
+This is the arduino code that supports the vibration command from the game code when hit. This code works by waiting for the "hit" command 
+to then start the motor and set a timer to shut it off half a second later.
+```cpp
+void loop(){
+ String command = receiveMessage();
+ 
+ // other commands
+ 
+  // vibrate motor and display hit
+  if(command == "Hit") { // player is hit by bullet
+    writeDisplay("You've been Hit!", 0, true);
+    vibrate = true;
+    timer1 = currentMillis;
+    activateMotor(255); // buzz motor
+  }
+  
+ // Sample data code
+ // Firing Code
+ 
+ 
+ // turn off motor after 0.5 seconds
+  if(vibrate && (currentMillis - timer1 >500)){
+    vibrate = false;
+    deactivateMotor();
+  }
+  }
+```
 
 <ins>3. Integrating game statistics</ins>  
-<!--NOTE: Start here justin-->
+
+To add the game over / you died feature to the arduino Oled display with vibrational feedback the following code changes were required
+
+The first code change was inside the game to learn when the game had ended an relay this information over to the python controller whihc could then pass it to the esp32
+```python
+class SpaceInvaders(object):
+    #...other functions
+    #...
+    def check_collisions(self):
+        for player in sprite.groupcollide(self.playerGroup, self.enemyBullets,
+                                          True, True).keys():
+            #mark
+            if self.life3.alive():
+                self.livesLeft -= 1
+                self.life3.kill()
+            elif self.life2.alive():
+                self.livesLeft -= 1
+                self.life2.kill()
+            elif self.life1.alive():
+                self.livesLeft -= 1
+                self.life1.kill()
+            else:
+                self.gameOver = True
+                self.startGame = False
+                ''' =========================================================================================== '''
+                mySocket.sendto("Dead".encode("utf-8"), address)  # sends Game over notification to socket
+                ''' =========================================================================================== '''
+
+        #... other code
+        #...
+```
+
+This is the code added inside the main loop of the space_invaders_controller.py file that is reused for several features.
+It is designed to simply check for any messages coming from the Game and sends them to the 
+esp32.
+```python
+    # check if server is sending any commands
+        try:
+            data = mySocket.recv(1024)
+            data = data.decode("utf-8")
+            controller.comms.send_message(data)
+        except BlockingIOError:
+            pass  # do nothing if there's no data
+```
+
+This is the arduino code! The code works by waiting for a "Dead" comand and when recived displaying "You Died" to 
+the oled. It also will start the motor and set a timer to turn it off in 1 second.
+```cpp
+void loop(){
+ String command = receiveMessage();
+ 
+ // other commands
+ 
+  // displays final death / gameover and vibrates motor
+ else if(command == "Dead") { // player loose :(
+    sending = false;
+    writeDisplay("You Died!!!", 0, true);
+    vibrate = true;
+    timer1 = currentMillis+500;
+    activateMotor(255); // buzz motor
+  }
+  
+ // Sample data code
+ // Firing Code
+ 
+ // turn off motor after 0.5 seconds
+  if(vibrate && (currentMillis - timer1 >500)){
+    vibrate = false;
+    deactivateMotor();
+  }
+  }
+```
 
 </br>  
 
@@ -402,6 +626,12 @@ Demo GC2 :clapper:
 
 Implementations GC2 :computer:
 ------------------------------
+
+
+
+State Diagram 
+![Alt Text](./images/Mstate.jpg)
+
 
 </br>  
 

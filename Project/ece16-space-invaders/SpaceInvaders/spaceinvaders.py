@@ -588,9 +588,6 @@ class SpaceInvaders(object):
         self.screen.blit(self.enemy4, (299, 420))
 
     def check_collisions(self):
-        ''' ================================================================================================================= '''
-        mySocket.sendto((",Score: "+ str(self.score)+ "   ").encode("utf-8"), address)  # sends Score notification to socket
-        ''' ================================================================================================================= '''
 
         sprite.groupcollide(self.bullets, self.enemyBullets, True, True)
 

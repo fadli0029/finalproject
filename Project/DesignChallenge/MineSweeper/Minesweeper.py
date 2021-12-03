@@ -18,7 +18,7 @@ grid_color = (128, 128, 128)
 
 game_width = 7      # Change this to increase size
 game_height = 7     # Change this to increase size
-numMine = 1         # Number of mines
+numMine = 10         # Number of mines
 grid_size = 32      # Size of grid (WARNING: macke sure to change the images dimension as well)
 border = 16         # Top border
 top_border = 100    # Left, Right, Bottom border
