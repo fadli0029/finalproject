@@ -365,6 +365,8 @@ For this Design Challenge, we choose to make a __game controller__ for the famou
 
 Descriptions & Discussions :bulb:
 ---------------------
+TBC  
+
 We decided this to be our final project because we believe it encompasses everything that has been taught in this class, from as basic as good __Object-Oriented Programming__ implementation, to __Digital Signal Processing__, concepts of __Finite State Machines__ in deriving a solution effectively and efficiently, and etc. Hence:  
 
 > Our goal is to make this old game enjoyable again, and promotes healthy lifetyle, especially during this pandemic LOL. It looks simple, but it's tiring :cold_sweat: !
