@@ -64,6 +64,9 @@ __Features:__
 Controller Instructions
 -----------------------
 
+Demo GC1 :clapper:
+------------------
+
 Implementations GC1 :computer:
 ------------------------------
 > __Improvements:__  
@@ -353,10 +356,6 @@ def generatingCommand(self, xf_input, yf_input, zf_input, is_fire):
 <ins>3. Integrating game statistics</ins>  
 <!--NOTE: Start here justin-->
 
-
-Demo GC1 :clapper:
-------------------
-
 </br>  
 
 Grand Challenge 2 :trophy:
@@ -391,7 +390,7 @@ Controller Instructions
 The following is the procedure to use the controller:  
 1. Upload the sketch, `MineSweeper.ino` to the MCU.
 2. Run the game by running the command: `python Minesweeper.py`
-3. Instantiate the client-server connection, run the command to activate the controller: `minesweeper_controller.py`
+3. Instantiate the client-server connection, run the command to activate the controller: `python minesweeper_controller.py`
 4. You will be asked to select a tile. Input the `x` and `y` coordinates, where __x is the m'th row__, and __y is the n'th column__. Do this by pressing the button on the breadboard(x-coord), and the built-in button (y-coord) on the microcontroller. You will see your selection on the OLED display.
 5. Then, the program will calculate the required number of jumping jacks you need to do to grant you that tile, in the following way:
    - `number of jumping jacks = | (previous x-coord - current x-coord) | + | (previous y-coord - current y-coord) |`
@@ -400,11 +399,11 @@ The following is the procedure to use the controller:
 8. If you win/lose and would like to restart the game, press the button once.
 9. Enjoy!
 
-Implementations GC2 :computer:
-------------------------------
-
 Demo GC2 :clapper:
 ------------------
+
+Implementations GC2 :computer:
+------------------------------
 
 </br>  
 
