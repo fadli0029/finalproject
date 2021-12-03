@@ -394,7 +394,7 @@ The following is the procedure to use the controller:
 3. Instantiate the client-server connection, run the command to activate the controller: `minesweeper_controller.py`
 4. You will be asked to select a tile. Input the `x` and `y` coordinates, where __x is the m'th row__, and __y is the n'th column__. Do this by pressing the button on the breadboard(x-coord), and the built-in button (y-coord) on the microcontroller. You will see your selection on the OLED display.
 5. Then, the program will calculate the required number of jumping jacks you need to do to grant you that tile, in the following way:
-  - `number of jumping jacks = | (previous x-coord - current x-coord) | + | (previous y-coord - current y-coord) |`
+   - `number of jumping jacks = | (previous x-coord - current x-coord) | + | (previous y-coord - current y-coord) |`
 6. Do the jumping jacks! After satisfying the jumping jacks counts, your tile will be selected on the game.
 7. Continue playing until you win/lose, good luck :thumbsup: !
 8. If you win/lose and would like to restart the game, press the button once.
