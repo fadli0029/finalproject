@@ -772,9 +772,227 @@ Implementations GC2 :computer:
 
 Game Code 
 ------------------------------
+The main minesweeper game code for this challenge is downloaded from pygames online. It basically allows for the 
+creation of a 7x7 grid with a set number of mines randomly hidden under the tiles. The additions and changes required to 
+work with our controller and desired features are as follows. Allow for grid based selection of tiles vs the original click based system
+and the transmission of relevant data back and forth from the python controller to the game. With these upgrade we are able to select tiles and
+reset the game from the esp32 as well as display the end game state on the controllers oled screen. The relevent additions can be seen bellow. 
+For the full code click [here](DesignChallenge/MineSweeper/Minesweeper.py)
+
+This first code shows the setup of the socket connection required to communicate with the python controller code and
+a function designed to check for socket messages when called.
+```python
+    # SERVER
+import socket
+host = "127.0.0.1"
+port = 65432
+mySocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+mySocket.bind((host, port))
+mySocket.setblocking(0)
+print("UDP server listening on port {0}.\n".format(port))
+
+# this functions checks incoming message from client
+def check_input_udp_socket():
+    msg = None
+    addr = 0
+    try:
+        msg, addr = mySocket.recvfrom(1024) # receive 1024 bytes
+        msg = msg.decode('utf-8')
+    except BlockingIOError:
+        pass # do nothing if there's no data
+    return msg, addr
+```
+This section of code shows how the reset and tile commands are proccesed in the game code. 
+First is the reset if statement followed by an import of the coordinates selected by the player. It is 
+important to note that the coordinates are scaled and shifted to be equal to the mouse click representation of each tile. 
+```python
+ # check if player pressed button to reset game and play again
+        msg, addr = check_input_udp_socket()
+        clickstat = None
+        if msg is not None:
+            if msg == "R" and (gameState == "Game Over" or gameState == "Win"):
+                gameState = "Exit"
+                gameLoop()
+                break;
+
+            try:
+                address = addr
+                (clickstat, x, y) = msg.split(',') 
+                # receives coordinate from client as specified by player
+                print("You selected tile at " + str(x) + ", " + str(y))
+                # conversion equations (explained in detail in README.md)
+                x_shifted = int(x) * 31 + 34 
+                y_shifted = int(y) * 33 + 116
+
+            except ValueError:  # if corrupted data, skip the sample
+                continue
+
+        if clickstat == "click":
+            for i in grid:
+                for j in i:
+                    # pass the coordinates to the collidepoint()
+                    # function
+                    if j.rect.collidepoint((x_shifted,y_shifted)):
+                        j.revealGrid()
+                        # Toggle flag off
+                        if j.flag:
+                            mineLeft += 1
+                            j.flag = False
+                        # If it's a mine
+                        if j.val == -1:
+                            gameState = "Game Over"
+                            j.mineClicked = True
+```
+This last piece of code simply shows the edited code allowing for win and lose commands to be sent to the controller.
+```python
+        if w and gameState != "Exit":
+            gameState = "Win"
+            
+            # sends W to python controller
+            mySocket.sendto(("Won").encode("utf-8"),address)  
+            
+        # checking game states
+        if gameState != "Game Over" and gameState != "Win":
+            t += 1
+        elif gameState == "Game Over":
+            drawText("Game Over!", 50)
+            
+            
+            # sends L to python code
+            mySocket.sendto(("Loss").encode("utf-8"),address) 
+            
+            
+            drawText("R to restart", 35, 50)
+            for i in grid:
+                for j in i:
+                    if j.flag and j.val != -1:
+                        j.mineFalse = True
+        else:
+            drawText("You WON!", 50)
+            drawText("R to restart", 35, 50)
+```
+
 
 Python Controller Code 
 ------------------------------
+The python controller code is designed to take act as both the bridge and interpreter between the pygame minesweeper and the
+esp32 arduino code. It accomplishes the bridge part using a bluetooth connection to talk to the esp32 and sockets to communicate with the game. 
+The interpretation is accomplished using logic and code designed in the previous labs sucha t the jumping jack counter from the pedometer class.
+
+The main part of the python game controller can be seen bellow in the run method with the less important parts edited out to save space. If futher refrence is desired 
+please see the full [Code Here.](DesignChallenge/MineSweeper/controller/Python/minesweeper_controller.py)
+
+This first section of the code checks if messages are received from the game and sends a request to the controller to select a tile.
+```python
+     def run(self):
+        #initalising of variables and start messages
+        ...
+        ...
+        
+        #main code loop
+        while True:
+            #check for messages from the game code
+            try:
+                # send W/L message to MCU
+                data = mySocket.recv(1024)
+                data = data.decode("utf-8")
+                if not GameOver:
+                    controller.comms.send_message(data)
+                if data != None:
+                    GameOver = True
+
+            except BlockingIOError:
+                pass  # do nothing if there's no data
+
+            # ask player to input(choose) coordinate
+            if sendChoose and not GameOver:
+                controller.comms.send_message("choose")
+                sendChoose = False
+```
+This section of code handles all incoming messages from the esp32 and sorts them into either a valid tile choice or the reset command!
+```python
+            # receives coordinates inputted by player
+            message = self.comms.receive_message()
+            if message != None:
+                print(message)
+
+            if (message != None) and not GameOver:
+                print("Waiting for User to enter coordinates...")
+                try:
+                    (x, y) = message.split(',')
+                    jj_n = abs(prev_x - int(x)) + abs(prev_y - int(y))
+                    # [where 'jj_n' is the number of jumping jacks needed]
+                    print("Jumping Jacks required: " + str(jj_n))
+                    prev_x = int(x)
+                    prev_y = int(y)
+                    sendChoose = True # update sendChoose
+                    isClicked = True  # update isClicked for jumping jacks later
+               
+                except ValueError:  # if corrupted data, skip the sample
+                    continue
+
+            if (message != None) and (message == "Reset\r\n"):   # reset game
+                mySocket.send(("R").encode("UTF-8"))
+                prev_x = 0
+                prev_y = 0
+                GameOver = False
+                sleep(0.5)
+                try:
+                    a = mySocket.recv(1024)
+                except BlockingIOError:
+                    pass  # do nothing if there's no data
+
+```
+This last section of code handles the counting of jumping jacks till the player has accrued enough currency to send the command to the game. 
+```python
+            f_command = None
+            if (isClicked):
+                validate = True     # ask for jumping jacks
+                self.ped.resetVal() # reset jumping jacks value
+                prev_time = 0
+                self.comms.clear()
+                
+                
+                # send message to MCU, begin taking sensor data
+                controller.comms.send_message("jj")
+                while (validate):
+                    msg = self.comms.receive_message()
+                    if(msg != None):
+                        try:
+                            (m1, m2, m3, m4) = msg.split(',')
+                        except ValueError:
+                            continue
+
+                        # add the new values to the circular lists
+                        self.ped.add(int(m2),int(m3),int(m4))
+
+                        current_time = time()
+                        if (current_time - prev_time > self.ref_t):
+                            prev_time = current_time
+                            # begin  processing data
+                            track_jumps, peaks, filtered = self.ped.process()
+                           
+                            controller.comms.send_message("Jumping Jacks   ,Required: "+str(jj_n-track_jumps))
+                            if (track_jumps >= jj_n):
+                                validate = False # update validate
+
+                # display number of jumping jacks completed
+                controller.comms.send_message("Jumping Jacks!  ,Completed!!!    ")
+                       
+                f_command = "click" + "," + str(x) + "," + str(y)
+
+            # send command(coordinate) to server
+            if f_command is not None:
+                mySocket.send(f_command.encode("UTF-8"))
+                sleep(0.5)
+                try:
+                    a = mySocket.recv(1024)
+                except BlockingIOError:
+                    pass  # do nothing if there's no data
+
+            isClicked = False # reset isClicked status to False
+
+```
 
 Arduino Controller Code 
 ------------------------------

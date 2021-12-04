@@ -28,8 +28,6 @@ class PygameController:
 
     def run(self):
         # 1. make sure data sending is stopped by ending streaming
-        shoot = False
-
         self.comms.send_message("stop")
         self.comms.clear()
 
@@ -43,18 +41,14 @@ class PygameController:
         # 3. Forever collect orientation and send to PyGame until user exits
         print("Use <CTRL+C> to exit the program.\n")
 
-        isClicked = False   # check if button is click (firing)
-        sendChoose = True   # check if button is click (firing)
-
+        isClicked = False   # check if button is click
+        sendChoose = True   # send choose command
         GameOver = False    # checking game state
-        holdreset = False   # checking if player wants to restart
 
-        previous_time = 0   # for timings
         prev_x = 0          # track previous coord specified
         prev_y = 0          # track previous coord specified
         jj_n = 0            # number of jumping jacks required hehe
 
-        previous_time = time()
         while True:
             try:
                 # send W/L message to MCU
@@ -96,15 +90,8 @@ class PygameController:
 
             if (message != None) and (message == "Reset\r\n"):   # reset game
                 mySocket.send(("R").encode("UTF-8"))
-                GameOver = False
-                sleep(0.5)
-                try:
-                    a = mySocket.recv(1024)
-                except BlockingIOError:
-                    pass  # do nothing if there's no data
-
-            if (message != None) and (message == "Reset\r\n"):   #reset
-                mySocket.send(("R").encode("UTF-8"))
+                prev_x = 0
+                prev_y = 0
                 GameOver = False
                 sleep(0.5)
                 try:
