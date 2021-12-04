@@ -38,9 +38,9 @@ Python Sockets Tutorial :memo:
 Objectives :bulb:
 ---------------------
 </br> 
-The objective of this challenge is to give us a basic understanding of how socket communication works in python. 
+The objective of this tutorial is to give us a basic understanding of how socket communication works in python. 
 This tutorial accomplishes this by giving us code for a bare bones esp32 based controller for the space invaders game.
-This code can be seen bellow and formed the basis of understanding used in the rest of this final project!
+This code can be seen below and formed the basis of understanding used in the rest of this final project!
 
 Implementations of Tutorial :computer:
 ------------------------------
@@ -173,6 +173,10 @@ if __name__ == '__main__':
         mySocket.close()
         ''' ============================================================ '''
 ```
+<br>
+By analyzing the above code we were able to add additional features and improvements to the space invader game controller code. 
+We were also able to adapt this code for a completely new game which can be seen in challenge 2!
+
 
 Grand Challenge 1 :trophy:
 ==========================
