@@ -27,13 +27,152 @@ Table of contents :bookmark_tabs:
 
 Final Project Objective :mag:
 =============================
+</br> 
+The final project of ece 16 was designed to give us as students the opportunity to apply all the knowledge we have learned throughout the quarter towards 
+an in depth design based project. This project test not only our understanding of the course material but also our ability to apply it to new challenges not
+defined by the teaching staff.
 
-</br>  
 
 Python Sockets Tutorial :memo:
 ==============================
+Objectives :bulb:
+---------------------
+</br> 
+The objective of this challenge is to give us a basic understanding of how socket communication works in python. 
+This tutorial accomplishes this by giving us code for a bare bones esp32 based controller for the space invaders game.
+This code can be seen bellow and formed the basis of understanding used in the rest of this final project!
 
-</br>  
+Implementations of Tutorial :computer:
+------------------------------
+</br> 
+This code is the python controller code given to us which demonstrates how to bridge a pygame with the esp32 using sockets and 
+bluetooth communication. It also implements some basic functionality of the game to work with the controller. 
+
+```python
+"""
+@author: Ramsin Khoshabeh
+"""
+
+from ECE16Lib.Communication import Communication
+from time import sleep
+import socket, pygame
+
+# Setup the Socket connection to the Space Invaders game
+host = "127.0.0.1"
+port = 65432
+mySocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+mySocket.connect((host, port))
+mySocket.setblocking(False)
+
+class PygameController:
+  comms = None
+
+  def __init__(self, serial_name, baud_rate):
+    self.comms = Communication(serial_name, baud_rate)
+
+  def run(self):
+    # 1. make sure data sending is stopped by ending streaming
+    self.comms.send_message("stop")
+    self.comms.clear()
+
+    # 2. start streaming orientation data
+    input("Ready to start? Hit enter to begin.\n")
+    self.comms.send_message("start")
+
+    # 3. Forever collect orientation and send to PyGame until user exits
+    print("Use <CTRL+C> to exit the program.\n")
+    while True:
+      message = self.comms.receive_message()
+      if(message != None):
+        command = None
+        message = int(message)
+        # if message == 0:
+        #   command = "FLAT"
+        # if message == 1:
+        #   command = "UP"
+        if message == 2:
+          command = "FIRE"
+        elif message == 3:
+          command = "LEFT"
+        elif message == 4:
+          command = "RIGHT"
+
+        if command is not None:
+          mySocket.send(command.encode("UTF-8"))
+
+
+if __name__== "__main__":
+  serial_name = "/dev/cu.BTDemo-ESP32SPP"
+  baud_rate = 115200
+  controller = PygameController(serial_name, baud_rate)
+
+  try:
+    controller.run()
+  except(Exception, KeyboardInterrupt) as e:
+    print(e)
+  finally:
+    print("Exiting the program.")
+    controller.comms.send_message("stop")
+    controller.comms.close()
+    mySocket.send("QUIT".encode("UTF-8"))
+    mySocket.close()
+
+  input("[Press ENTER to finish.]")
+```
+<br>
+The pygame code is very large but these small sections demonstrate the connection code given to us from the game side!
+
+```python
+
+import socket
+host = "127.0.0.1"
+port = 65432
+mySocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+mySocket.bind((host, port))
+mySocket.setblocking(0)
+
+def check_input_udp_socket(self):
+        try:
+            msg, _ = mySocket.recvfrom(1024) # receive 1024 bytes
+            msg = msg.decode('utf-8')
+            print("Command: " + msg)
+
+            if msg == "QUIT":
+                sys.exit()
+            if msg == "FIRE":
+                if len(self.bullets) == 0 and self.shipAlive:
+                    if self.score < 1000:
+                        bullet = Bullet(self.player.rect.x + 23,
+                                        self.player.rect.y + 5, -1,
+                                        15, 'laser', 'center')
+                        self.bullets.add(bullet)
+                        self.allSprites.add(self.bullets)
+                        self.sounds['shoot'].play()
+                    else:
+                        leftbullet = Bullet(self.player.rect.x + 8,
+                                            self.player.rect.y + 5, -1,
+                                            15, 'laser', 'left')
+                        rightbullet = Bullet(self.player.rect.x + 38,
+                                                self.player.rect.y + 5, -1,
+                                                15, 'laser', 'right')
+                        self.bullets.add(leftbullet)
+                        self.bullets.add(rightbullet)
+                        self.allSprites.add(self.bullets)
+                        self.sounds['shoot2'].play()
+            else:
+                self.player.update_udp_socket(msg)
+        except BlockingIOError:
+            pass # do nothing if there's no data
+
+if __name__ == '__main__':
+    game = SpaceInvaders()
+    try:
+        game.main()
+    finally:
+        ''' ============================================================ '''
+        mySocket.close()
+        ''' ============================================================ '''
+```
 
 Grand Challenge 1 :trophy:
 ==========================
