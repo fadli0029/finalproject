@@ -1169,7 +1169,19 @@ data to the python controller code.
 Teammates Roles :boy: :man: :
 =============================
 <ins>__Muhammad Fadli Alim Arsani :boy:__</ins>  
+    Everything, Single handed master of all code and hardware design.       
+    It's been a pleasure working and hanging out with you this quarter best of luck on finals 
 
 <ins>__Justin Volheim :man:__</ins>  
+Challenge 1     
+    - lives and score count display features     
+    - Vibrational feedback and display when hit  
+    - GameOver display and vibrational feedback       
+Challenge 2     
+    - Arduino state design and implementation       
+    - Communication between game, python controller and esp32
+    - Tile selection logic      
+    - Display features
+
 
 

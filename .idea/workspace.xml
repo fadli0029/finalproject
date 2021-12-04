@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="a7d9c182-6f05-4d62-a524-4507007c6cb0" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Project/DesignChallenge/MineSweeper/controller/Python/minesweeper_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/Project/DesignChallenge/MineSweeper/controller/Python/minesweeper_controller.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Project/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/Project/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
