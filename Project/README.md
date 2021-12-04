@@ -770,13 +770,183 @@ Demo GC2 :clapper:
 Implementations GC2 :computer:
 ------------------------------
 
+Game Code 
+------------------------------
 
+Python Controller Code 
+------------------------------
+
+Arduino Controller Code 
+------------------------------
+<br>
+The Arduino code uses several states to direct the inputs from the accelerometer, buttons, and bluetooth serial port 
+to the necessary Outputs such as the bluetooth serial, Display and motor! The code does this by utilizing several of
+the code files used in previous labs such as Accelerometer, Communication, Display, Motor and sampling. The state diagram 
+of this code can be found below to make understanding the arduino code a bit easier.        
 
 State Diagram 
 ![Alt Text](./images/Mstate.jpg)
-
-
 </br>  
+The arduino code this state diagram refers to can be seen below.
+
+This first segment shows the set-up of variables and initialization of buttons and code blocks.
+```cpp
+    // Acceleration values recorded from the readAccelSensor() function
+int ax = 0; int ay = 0; int az = 0;
+int ppg = 0;              // PPG from readPhotoSensor() (in Photodetector tab)
+int sampleTime = 0;       // Time of last sample (in Sampling tab)
+const int buttonPin1 = /*0;*/ 12;
+const int buttonPin2 = 0; /*12;*/
+int x = 0;
+int y = 0;
+bool sending, oldStatus1, oldStatus2, both;
+
+// for tracking button states
+int currentState1 = 0;
+int lastButtonState1;
+int currentState2 = 0;
+int lastButtonState2;
+bool bothlast = false;
+bool resetState = false;
+
+void setup() {
+  setupAccelSensor();
+  setupCommunication();
+  setupDisplay();
+  setupPhotoSensor();
+  setupMotor();
+  sending = false;
+
+  writeDisplay("Ready...", 1, true);
+  writeDisplay("Set...", 2, false);
+  writeDisplay("Play!", 3, false);
+
+  pinMode(buttonPin1, INPUT_PULLUP);
+  pinMode(buttonPin2, INPUT_PULLUP);
+}
+```
+
+This second section shows the beginning of the code loop with the start and stop commands.
+```cpp
+void loop() {
+
+  String command = receiveMessage();
+  if(command == "stop") {
+    writeDisplay("Controller: Off", 0, true);
+  }
+
+  else if(command == "start") {
+    writeDisplay("Controller: On", 0, true);
+  }
+
+```
+This third section shows the choose command which allows the player to select a tile based on button presses
+and send that choice to the python code based on if both buttons are pressed together. 
+```cpp
+  else if(command == "choose") { 
+    // player is choosing coordinate
+    sending = false;
+      
+    while(1) {
+      writeDisplay("Select Tile!", 0, true);
+      String h = "x: "+String(x)+" y: "+String(y);
+      writeDisplay(h.c_str(), 1, false);
+      currentState1 = !digitalRead(buttonPin1);
+      currentState2 = !digitalRead(buttonPin2);
+
+      // sending to computer
+      both  = currentState1 && currentState2;
+      // if button 1 and 2 send and break
+      if(both != bothlast) {
+        if(both) {
+          writeDisplay("Selecting",0,true);
+          sendMessage(String(x)+","+ String(y));
+          break;
+        }
+      }
+      bothlast = both;
+      
+      // if button 1 ++
+      if (currentState1 != lastButtonState1) { 
+        if (currentState1) {
+          x++;
+        }
+        if(x == 7) {
+          x = 0;
+        }
+      }
+      lastButtonState1 = currentState1;
+
+      // if button 2 ++
+      if (currentState2 != lastButtonState2) { 
+        if (currentState2) {
+          y++;
+        }
+        if(y == 7) {
+          y = 0;
+        }
+      }
+      lastButtonState2 = currentState2;
+    }
+  }
+```
+This section of code shows the remaining available commands, jj to start sending accelerometer data,
+Won to display a winning message, Loss to display a Game over message and a standard command allowing 
+us to send any CSV message to be displayed on the oled display.
+
+```cpp
+  else if(command =="jj") {
+    // ready to track jumping jacks
+    sending = true;
+    writeDisplay("",0,true);
+  }
+  else if(command == "Won")  {
+    // player won the game, ask if he wants to restart
+    writeDisplay("You Won!!!      ",0,true);
+    writeDisplay("Press R to reset",1,false);
+    resetState = true;
+  }
+  else if(command == "Loss") {
+    // player lose the game, ask if he wants to restart
+    writeDisplay("Game Over!      ",0,true);
+    writeDisplay("Press R to reset",1,false);
+    resetState = true;
+
+  }
+  else if(command != "") {
+    // display number of jumping jacks done
+    writeDisplayCSV(command,1);
+  }
+```
+This final section of code shows the reset state and the sending of accelerometer 
+data to the python controller code.
+```cpp
+  if(resetState){
+    // check if reset, send it to python
+    resetState = false;
+    sending = false;
+    x=0;
+    y=0;
+    delay(500);
+    while(1){
+      currentState1 = !digitalRead(buttonPin1);
+      if (currentState1 != lastButtonState1) {
+        if (currentState1) {
+          sendMessage("Reset");
+          break;
+        }
+      }
+      lastButtonState1 = currentState1;
+    }
+  }
+  if (sending && sampleSensors()) {
+    // collect sensor data
+    String response = String(sampleTime) + ",";
+    response += String(ax) + "," + String(ay) + "," + String(az);
+    sendMessage(response);
+  }
+}
+```
 
 Teammates Roles :boy: :man: :
 =============================
