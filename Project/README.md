@@ -9,10 +9,12 @@ Table of contents :bookmark_tabs:
 =================================
 * [Final Project Objective](#final-project-objective-mag)
 * [Python Sockets Tutorial](#python-sockets-tutorial-memo)
+  * [Objectives](#objectives-bulb)
+  * [Implementations of Tutorial](#implementations-of-tutorial-computer)
 * [Grand Challenge 1](#grand-challenge-1-trophy)
-  * [Objectives](#objectives-gc1-bulb)
-  * [Discussions of Improvements & Features](#improvements-and-features-gc1-hammer_and_wrench)
-  * [Controller Instructions](#dummy)
+  * [Objectives](#objectives-bulb-1)
+  * [Discussions of Improvements & Features](#discussions-of-improvements--features-hammer_and_wrench)
+  * [Controller Instructions](#controller-instructions)
   * [Implementations](#implementations-gc1-computer)
   * [Demo](#demo-gc1-clapper)
 * [Grand Challenge 2](#grand-challenge-2-trophy)
@@ -36,7 +38,6 @@ Python Sockets Tutorial :memo:
 ==============================
 Objectives :bulb:
 ---------------------
-</br> 
 The objective of this tutorial is to give us a basic understanding of how socket communication works in python. This tutorial accomplishes this by giving us code for a bare bones esp32 based controller for the space invaders game. This code can be seen below and formed the basis of understanding used in the rest of this final project!  
 
 Implementations of Tutorial :computer:
@@ -203,8 +204,8 @@ __Features:__
    - When playing the game we noticed that there was no real benefit in experience of gamplay while using the controller over the computer controls besides the tilting improvement, so we wanted to add some uniqueness to the controller
         which gives the player a fuller experience while playing the game.
 
-Controller Instructions
------------------------
+Controller Instructions :video_game:
+------------------------------------
 The following is the procedure to use the controller:  
 1. Upload the sketch, `SpaceInvadersController.ino` to the MCU.
 2. Run the game by running the command: `python spaceinvaders.py`
@@ -218,7 +219,7 @@ The following is the procedure to use the controller:
 ------------------
 > [Demo video](https://www.youtube.com/watch?v=un4AiuLYsPA)
 
-Implementations GC1 :computer:
+Implementations :computer:
 ------------------------------
 > __Improvements:__  
 
@@ -755,8 +756,8 @@ __Features:__
 3. __Game statistics__, displaying __jumping jack counts__ on the OLED display.
    - As mention in point no. 1, the user can directly look at the OLED display to know how many more jumping jacks are needed to select the tile they choose.
 
-Controller Instructions
------------------------
+Controller Instructions :video_game:
+------------------------------------
 The following is the procedure to use the controller:  
 1. Upload the sketch, `MineSweeper.ino` to the MCU.
 2. Run the game by running the command: `python Minesweeper.py`
