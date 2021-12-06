@@ -30,23 +30,19 @@ Final Project Objective :mag:
 </br> 
 The final project of ece 16 was designed to give us as students the opportunity to apply all the knowledge we have learned throughout the quarter towards 
 an in depth design based project. This project test not only our understanding of the course material but also our ability to apply it to new challenges not
-defined by the teaching staff.
-
+defined by the teaching staff.  
 
 Python Sockets Tutorial :memo:
 ==============================
 Objectives :bulb:
 ---------------------
 </br> 
-The objective of this tutorial is to give us a basic understanding of how socket communication works in python. 
-This tutorial accomplishes this by giving us code for a bare bones esp32 based controller for the space invaders game.
-This code can be seen below and formed the basis of understanding used in the rest of this final project!
+The objective of this tutorial is to give us a basic understanding of how socket communication works in python. This tutorial accomplishes this by giving us code for a bare bones esp32 based controller for the space invaders game. This code can be seen below and formed the basis of understanding used in the rest of this final project!  
 
 Implementations of Tutorial :computer:
 ------------------------------
 </br> 
-This code is the python controller code given to us which demonstrates how to bridge a pygame with the esp32 using sockets and 
-bluetooth communication. It also implements some basic functionality of the game to work with the controller. 
+This code is the python controller code given to us which demonstrates how to bridge a pygame with the esp32 using sockets and bluetooth communication. It also implements some basic functionality of the game to work with the controller. 
 
 ```python
 """
@@ -209,9 +205,18 @@ __Features:__
 
 Controller Instructions
 -----------------------
+The following is the procedure to use the controller:  
+1. Upload the sketch, `SpaceInvadersController.ino` to the MCU.
+2. Run the game by running the command: `python spaceinvaders.py`
+3. Instantiate the client-server connection, run the command to activate the controller: `python space_invaders_controller.py`
+4. Use the button to fire, and you can now fire while moving!.
+5. Then, you can straight away enjoy the game!
+6. If you need to see the statistics, like your lives counts, they're displayed on the OLED.
+9. Enjoy!  
 
-Demo GC1 :clapper:
+[Demo](https://www.youtube.com/watch?v=un4AiuLYsPA) :clapper:
 ------------------
+> [Demo video](https://www.youtube.com/watch?v=un4AiuLYsPA)
 
 Implementations GC1 :computer:
 ------------------------------
@@ -764,20 +769,18 @@ The following is the procedure to use the controller:
 8. If you win/lose and would like to restart the game, press the button once.
 9. Enjoy!
 
-Demo GC2 :clapper:
+[Demo](https://www.youtube.com/watch?v=rpel16tBC4Y) :clapper:
 ------------------
+> [Demo video](https://www.youtube.com/watch?v=rpel16tBC4Y)
 
-Implementations GC2 :computer:
-------------------------------
-
-Game Code 
+Implementations :computer:
 ------------------------------
 The main minesweeper game code for this challenge is downloaded from pygames online. It basically allows for the 
 creation of a 7x7 grid with a set number of mines randomly hidden under the tiles. The additions and changes required to 
 work with our controller and desired features are as follows. Allow for grid based selection of tiles vs the original click based system
 and the transmission of relevant data back and forth from the python controller to the game. With these upgrade we are able to select tiles and
 reset the game from the esp32 as well as display the end game state on the controllers oled screen. The relevent additions can be seen bellow. 
-For the full code click [here](DesignChallenge/MineSweeper/Minesweeper.py)
+For the full code click [here](DesignChallenge/MineSweeper/Minesweeper.py).
 
 This first code shows the setup of the socket connection required to communicate with the python controller code and
 a function designed to check for socket messages when called.
@@ -872,9 +875,10 @@ This last piece of code simply shows the edited code allowing for win and lose c
             drawText("R to restart", 35, 50)
 ```
 
+</br>
 
-Python Controller Code 
-------------------------------
+> Python Controller Code   
+
 The python controller code is designed to take act as both the bridge and interpreter between the pygame minesweeper and the
 esp32 arduino code. It accomplishes the bridge part using a bluetooth connection to talk to the esp32 and sockets to communicate with the game. 
 The interpretation is accomplished using logic and code designed in the previous labs sucha t the jumping jack counter from the pedometer class.
@@ -994,20 +998,25 @@ This last section of code handles the counting of jumping jacks till the player 
 
 ```
 
-Arduino Controller Code 
-------------------------------
-<br>
+</br>
+
+> Arduino Controller Code  
+
 The Arduino code uses several states to direct the inputs from the accelerometer, buttons, and bluetooth serial port 
 to the necessary Outputs such as the bluetooth serial, Display and motor! The code does this by utilizing several of
 the code files used in previous labs such as Accelerometer, Communication, Display, Motor and sampling. The state diagram 
-of this code can be found below to make understanding the arduino code a bit easier.        
+of this code can be found below to make understanding the arduino code a bit easier.  
 
-State Diagram 
+<ins>__State Diagram__</ins>  
+
 ![Alt Text](./images/Mstate.jpg)
-</br>  
-The arduino code this state diagram refers to can be seen below.
 
-This first segment shows the set-up of variables and initialization of buttons and code blocks.
+</br>  
+
+The arduino code this state diagram refers to can be seen below.  
+
+This first segment shows the set-up of variables and initialization of buttons and code blocks.  
+
 ```cpp
     // Acceleration values recorded from the readAccelSensor() function
 int ax = 0; int ay = 0; int az = 0;
@@ -1166,22 +1175,32 @@ data to the python controller code.
 }
 ```
 
+</br>
+
 Teammates Roles :boy: :man: :
 =============================
 <ins>__Muhammad Fadli Alim Arsani :boy:__</ins>  
-    Everything, Single handed master of all code and hardware design.       
-    It's been a pleasure working and hanging out with you this quarter best of luck on finals 
+
+- __Challenge 1__
+  - Impelemented DSP to provide smoother movement (tilting).
+  - Decoupled firing and movement, for better gaming experience, increasing the chances of becoming a pro gamer in Space Invader.
+  - Switch firing mechanism from tilting the breadboard up/down to simply pressing the button.
+- __Challenge 2__
+  - Refactor original code of the minesweeper game, enabling our python program to be the one initiating tile selection and not the mouse.
+  - Jumping jack detection via DSP.
+  - Manage the processing of the jumping jack count, i.e: when should the program start sensing for jumping jacks.
 
 <ins>__Justin Volheim :man:__</ins>  
-Challenge 1     
-    - lives and score count display features     
-    - Vibrational feedback and display when hit  
-    - GameOver display and vibrational feedback       
-Challenge 2     
-    - Arduino state design and implementation       
-    - Communication between game, python controller and esp32
-    - Tile selection logic      
-    - Display features
+
+- __Challenge 1__
+  - Lives and score count display features, making sure player are engaged both with the controller and the game itself.
+  - Vibrational feedback and display when hit, creating an immersive gameplay.
+  - GameOver display and vibrational feedback.
+- __Challenge 2__
+  - Arduino state design and implementation, for a clean, effective, easy-to-debug, and reliable end product.
+  - Communication between game, python controller and esp32.
+  - Eliminate the need of retrieving a specific cursor coordinate on game window by implementing tile selection logic, .
+  - Display features to keep the player updated with their game statistics and engaged with the game.
 
 
 
